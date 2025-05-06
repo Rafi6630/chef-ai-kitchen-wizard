@@ -18,7 +18,7 @@ export default function CategoryCard({ subcategory }: CategoryCardProps) {
         className="w-full h-full object-cover"
       />
       <div className="category-card-content">
-        <h3 className="text-xl font-bold">{subcategory.name}</h3>
+        <h3 className="text-sm font-bold line-clamp-2">{subcategory.name}</h3>
       </div>
     </Link>
   );

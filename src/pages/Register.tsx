@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
+import LanguageSelector from "@/components/auth/LanguageSelector";
 
 export default function Register() {
   const [fullName, setFullName] = useState("");
@@ -53,10 +54,13 @@ export default function Register() {
   return (
     <AppLayout showNavigation={false}>
       <div className="p-8">
-        <Link to="/login" className="mb-6 inline-flex items-center text-chef-primary">
-          <ArrowLeft size={18} />
-          <span className="ml-1">Back to Login</span>
-        </Link>
+        <div className="flex justify-between items-center mb-6">
+          <Link to="/login" className="inline-flex items-center text-chef-primary">
+            <ArrowLeft size={18} />
+            <span className="ml-1">Back to Login</span>
+          </Link>
+          <LanguageSelector />
+        </div>
         
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Create Account</h1>

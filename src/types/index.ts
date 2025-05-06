@@ -58,3 +58,22 @@ export interface Message {
   isBot: boolean;
   timestamp: Date;
 }
+
+export interface PantryItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  category: string;
+  expirationDate?: Date;
+  addedDate: Date;
+}
+
+export interface CookingHistoryItem {
+  id: string;
+  recipeId: string;
+  recipeTitle: string;
+  recipeImage: string;
+  date: Date;
+  notes?: string;
+}

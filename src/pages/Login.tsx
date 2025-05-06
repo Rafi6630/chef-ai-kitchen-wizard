@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Globe } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
+import LanguageSelector from "@/components/auth/LanguageSelector";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -115,14 +115,7 @@ export default function Login() {
           </div>
           
           <div className="mt-8 flex justify-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-gray-500 flex items-center gap-1"
-            >
-              <Globe size={16} />
-              <span>English</span>
-            </Button>
+            <LanguageSelector />
           </div>
         </div>
       </div>

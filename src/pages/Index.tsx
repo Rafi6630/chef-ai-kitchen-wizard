@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, ChefHat, Clock, Star } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";
@@ -52,6 +52,28 @@ export default function Index() {
       </header>
       
       <main className="px-6">
+        {/* Quick access buttons */}
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+          <Link to="/saved-recipes" className="flex-shrink-0">
+            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+              <Star size={15} />
+              <span>Saved Recipes</span>
+            </Button>
+          </Link>
+          <Link to="/cooking-history" className="flex-shrink-0">
+            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+              <Clock size={15} />
+              <span>History</span>
+            </Button>
+          </Link>
+          <Link to="/browse" className="flex-shrink-0">
+            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+              <ChefHat size={15} />
+              <span>Global Cuisine</span>
+            </Button>
+          </Link>
+        </div>
+        
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Select a Category</h2>
           <p className="text-gray-600 text-sm">
@@ -59,7 +81,7 @@ export default function Index() {
           </p>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           {filteredSubcategories.map((subcategory) => (
             <CategoryCard key={subcategory.id} subcategory={subcategory} />
           ))}

@@ -12,6 +12,12 @@ import Filters from "./pages/Filters";
 import Browse from "./pages/Browse";
 import RecipeDetail from "./pages/RecipeDetail";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Pantry from "./pages/Pantry";
+import SavedRecipes from "./pages/SavedRecipes";
+import CookingHistory from "./pages/CookingHistory";
+import Subscription from "./pages/Subscription";
+import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +37,12 @@ const App = () => (
           <Route path="/browse" element={<Browse />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/pantry" element={<Pantry />} />
+          <Route path="/saved-recipes" element={<SavedRecipes />} />
+          <Route path="/cooking-history" element={<CookingHistory />} />
+          <Route path="/subscription" element={<Subscription />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

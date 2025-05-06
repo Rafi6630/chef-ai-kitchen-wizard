@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/layout/AppLayout";
-import { ChevronRight, Star, Clock, Settings, CreditCard } from "lucide-react";
+import { ChevronRight, Star, Clock, Settings, CreditCard, User as UserIcon, Heart, List, Book, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,6 +46,9 @@ export default function Profile() {
             <div className="ml-4">
               <h2 className="font-semibold text-lg">{user.name}</h2>
               <p className="text-gray-600 text-sm">{user.email}</p>
+              <Link to="/profile/edit" className="text-chef-primary text-sm font-medium">
+                Edit Profile
+              </Link>
             </div>
           </div>
         </div>
@@ -56,21 +59,28 @@ export default function Profile() {
             <p className="text-white/90 text-sm mb-4">
               Get access to exclusive recipes, detailed nutritional info, and more!
             </p>
-            <Link to="/subscription">
-              <Button className="bg-white text-chef-primary hover:bg-white/90">
-                View Plans
-              </Button>
-            </Link>
+            <div className="flex space-x-2">
+              <Link to="/subscription" className="flex-1">
+                <Button className="bg-white text-chef-primary hover:bg-white/90 w-full">
+                  View Plans
+                </Button>
+              </Link>
+              <Link to="/payment" className="flex-1">
+                <Button className="bg-black/20 text-white hover:bg-black/30 w-full">
+                  Try Free
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
         
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold text-lg mb-3">Account</h3>
+            <h3 className="font-semibold text-lg mb-3">Favorites & History</h3>
             <div className="bg-white rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
               <Link to="/saved-recipes" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
-                  <Star size={20} className="text-gray-500 mr-3" />
+                  <Heart size={20} className="text-gray-500 mr-3" />
                   <span>Saved Recipes</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
@@ -82,19 +92,57 @@ export default function Profile() {
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
+              <Link to="/meal-plans" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <List size={20} className="text-gray-500 mr-3" />
+                  <span>Meal Plans</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-3">Food Management</h3>
+            <div className="bg-white rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
               <Link to="/pantry" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 mr-3">
-                    <path d="M21 7v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.1"></path><path d="M18 3h2v4"></path><path d="M15 7V3"></path>
-                  </svg>
+                  <BookOpen size={20} className="text-gray-500 mr-3" />
                   <span>Smart Pantry</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
+              <Link to="/shopping-list" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <Book size={20} className="text-gray-500 mr-3" />
+                  <span>Shopping List</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/dietary-preferences" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <UserIcon size={20} className="text-gray-500 mr-3" />
+                  <span>Dietary Preferences</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-lg mb-3">Account</h3>
+            <div className="bg-white rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
               <Link to="/subscription" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
-                  <CreditCard size={20} className="text-gray-500 mr-3" />
+                  <Star size={20} className="text-gray-500 mr-3" />
                   <span>Subscription</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/payment-methods" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <CreditCard size={20} className="text-gray-500 mr-3" />
+                  <span>Payment Methods</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
