@@ -4,6 +4,7 @@ export interface User {
   name: string;
   email: string;
   isPremium: boolean;
+  isAdmin?: boolean; // Added for admin functionality
 }
 
 export type Category = 'food' | 'desserts' | 'drinks';
@@ -67,6 +68,7 @@ export interface PantryItem {
   category: string;
   expirationDate?: Date;
   addedDate: Date;
+  isSelected?: boolean; // Added for selecting ingredients
 }
 
 export interface CookingHistoryItem {
@@ -76,4 +78,12 @@ export interface CookingHistoryItem {
   recipeImage: string;
   date: Date;
   notes?: string;
+}
+
+// Admin panel related types
+export interface AdminStats {
+  totalUsers: number;
+  premiumUsers: number;
+  totalRecipes: number;
+  activeChats: number;
 }

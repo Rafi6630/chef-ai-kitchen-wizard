@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import AppLayout from "@/components/layout/AppLayout";
-import { Search, Plus, Trash2, Edit2 } from "lucide-react";
+import { Search, Plus, Trash2, Edit2, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PantryItem } from "@/types";
 import { Link } from "react-router-dom";
@@ -18,7 +18,8 @@ const mockPantryItems: PantryItem[] = [
     unit: "g",
     category: "Protein",
     expirationDate: new Date(2025, 4, 15),
-    addedDate: new Date(2025, 4, 1)
+    addedDate: new Date(2025, 4, 1),
+    isSelected: false
   },
   {
     id: "2",
@@ -26,7 +27,8 @@ const mockPantryItems: PantryItem[] = [
     quantity: 2,
     unit: "kg",
     category: "Grains",
-    addedDate: new Date(2025, 3, 10)
+    addedDate: new Date(2025, 3, 10),
+    isSelected: false
   },
   {
     id: "3",
@@ -34,7 +36,8 @@ const mockPantryItems: PantryItem[] = [
     quantity: 750,
     unit: "ml",
     category: "Oils",
-    addedDate: new Date(2025, 2, 20)
+    addedDate: new Date(2025, 2, 20),
+    isSelected: false
   },
   {
     id: "4",
@@ -43,7 +46,8 @@ const mockPantryItems: PantryItem[] = [
     unit: "pc",
     category: "Vegetables",
     expirationDate: new Date(2025, 4, 10),
-    addedDate: new Date(2025, 4, 3)
+    addedDate: new Date(2025, 4, 3),
+    isSelected: false
   },
   {
     id: "5",
@@ -51,7 +55,8 @@ const mockPantryItems: PantryItem[] = [
     quantity: 1,
     unit: "kg",
     category: "Vegetables",
-    addedDate: new Date(2025, 4, 2)
+    addedDate: new Date(2025, 4, 2),
+    isSelected: false
   }
 ];
 
@@ -61,7 +66,10 @@ export default function Pantry() {
   const [pantryItems, setPantryItems] = useState<PantryItem[]>(mockPantryItems);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [selectionMode, setSelectionMode] = useState(false);
   const { toast } = useToast();
+
+  const selectedItems = pantryItems.filter(item => item.isSelected);
 
   const filteredItems = pantryItems.filter(item => {
     // Filter by search term
@@ -89,6 +97,12 @@ export default function Pantry() {
     });
   };
 
+  const handleToggleSelect = (id: string) => {
+    setPantryItems(pantryItems.map(item => 
+      item.id === id ? { ...item, isSelected: !item.isSelected } : item
+    ));
+  };
+
   const handleAddItem = () => {
     // In a real app, this would open an add modal
     toast({
@@ -99,7 +113,16 @@ export default function Pantry() {
 
   const handleFindRecipes = () => {
     // Navigate to chatbot with pantry ingredients
-    window.location.href = "/chatbot?use_pantry=true";
+    if (selectedItems.length > 0) {
+      const ingredientNames = selectedItems.map(item => item.name).join(',');
+      window.location.href = `/chatbot?use_pantry=true&ingredients=${ingredientNames}`;
+    } else {
+      toast({
+        title: "No ingredients selected",
+        description: "Please select at least one ingredient to find recipes.",
+        variant: "destructive"
+      });
+    }
   };
 
   const formatDate = (date?: Date) => {
@@ -126,10 +149,20 @@ export default function Pantry() {
         <header className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Smart Pantry</h1>
-            <Button onClick={handleAddItem} size="sm" className="bg-chef-primary">
-              <Plus size={16} className="mr-1" />
-              Add Item
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                variant={selectionMode ? "default" : "outline"}
+                onClick={() => setSelectionMode(!selectionMode)}
+                className={selectionMode ? "bg-chef-primary" : ""}
+              >
+                {selectionMode ? "Cancel Selection" : "Select Ingredients"}
+              </Button>
+              <Button onClick={handleAddItem} size="sm" className="bg-chef-primary">
+                <Plus size={16} className="mr-1" />
+                Add Item
+              </Button>
+            </div>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -160,37 +193,50 @@ export default function Pantry() {
             {filteredItems.length > 0 ? (
               <div className="space-y-3">
                 {filteredItems.map(item => (
-                  <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">{item.name}</h3>
-                      <div className="text-sm text-gray-600">
-                        {item.quantity} {item.unit} · {item.category}
-                      </div>
-                      {item.expirationDate && (
-                        <div className={`text-xs mt-1 ${isExpiringSoon(item.expirationDate) ? 'text-red-500 font-medium' : 'text-gray-500'}`}>
-                          Expires: {formatDate(item.expirationDate)}
-                          {isExpiringSoon(item.expirationDate) && " (Soon)"}
+                  <div 
+                    key={item.id} 
+                    className={`bg-white rounded-xl p-4 shadow-sm flex justify-between items-center ${item.isSelected ? 'border-2 border-chef-primary' : ''}`}
+                    onClick={selectionMode ? () => handleToggleSelect(item.id) : undefined}
+                  >
+                    <div className="flex items-center gap-3">
+                      {selectionMode && (
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${item.isSelected ? 'bg-chef-primary border-chef-primary text-white' : 'border-gray-300'}`}>
+                          {item.isSelected && <CheckCircle size={16} />}
                         </div>
                       )}
+                      <div>
+                        <h3 className="font-semibold">{item.name}</h3>
+                        <div className="text-sm text-gray-600">
+                          {item.quantity} {item.unit} · {item.category}
+                        </div>
+                        {item.expirationDate && (
+                          <div className={`text-xs mt-1 ${isExpiringSoon(item.expirationDate) ? 'text-red-500 font-medium' : 'text-gray-500'}`}>
+                            Expires: {formatDate(item.expirationDate)}
+                            {isExpiringSoon(item.expirationDate) && " (Soon)"}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex space-x-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0"
-                        onClick={() => handleEditItem(item.id)}
-                      >
-                        <Edit2 size={16} />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 text-red-500"
-                        onClick={() => handleDeleteItem(item.id)}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
+                    {!selectionMode && (
+                      <div className="flex space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0"
+                          onClick={() => handleEditItem(item.id)}
+                        >
+                          <Edit2 size={16} />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 text-red-500"
+                          onClick={() => handleDeleteItem(item.id)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -210,9 +256,29 @@ export default function Pantry() {
             <Button 
               onClick={handleFindRecipes} 
               className="w-full bg-chef-primary"
+              disabled={selectionMode && selectedItems.length === 0}
             >
-              Find Recipes With These Ingredients
+              Find Recipes With {selectedItems.length > 0 ? `Selected (${selectedItems.length})` : 'These'} Ingredients
             </Button>
+          </div>
+        )}
+
+        {selectedItems.length > 0 && (
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 className="text-sm font-semibold mb-2">Selected Ingredients:</h3>
+            <div className="flex flex-wrap gap-2">
+              {selectedItems.map(item => (
+                <div key={item.id} className="bg-white px-3 py-1 rounded-full text-sm border border-gray-200 flex items-center">
+                  {item.name}
+                  <button 
+                    className="ml-2 text-gray-400 hover:text-gray-600"
+                    onClick={() => handleToggleSelect(item.id)}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

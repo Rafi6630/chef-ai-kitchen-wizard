@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, ChefHat, Clock, Star } from "lucide-react";
+import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";
@@ -68,8 +68,26 @@ export default function Index() {
           </Link>
           <Link to="/browse" className="flex-shrink-0">
             <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
-              <ChefHat size={15} />
+              <Globe size={15} />
               <span>Global Cuisine</span>
+            </Button>
+          </Link>
+        </div>
+        
+        {/* Find recipes with pantry ingredients */}
+        <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 p-4 rounded-xl">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="bg-chef-primary text-white p-2 rounded-full">
+              <Utensils size={20} />
+            </div>
+            <h2 className="text-lg font-semibold">Cook With What You Have</h2>
+          </div>
+          <p className="text-gray-600 text-sm mb-3">
+            Select ingredients from your pantry and find recipes you can make right now.
+          </p>
+          <Link to="/pantry">
+            <Button className="w-full bg-chef-primary">
+              Find Recipes With Your Ingredients
             </Button>
           </Link>
         </div>

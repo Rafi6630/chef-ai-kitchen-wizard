@@ -19,6 +19,9 @@ import CookingHistory from "./pages/CookingHistory";
 import Subscription from "./pages/Subscription";
 import Payment from "./pages/Payment";
 import NotFound from "./pages/NotFound";
+// Admin routes
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* User-facing routes */}
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -43,6 +47,13 @@ const App = () => (
           <Route path="/cooking-history" element={<CookingHistory />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/payment" element={<Payment />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          
+          {/* 404 route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
