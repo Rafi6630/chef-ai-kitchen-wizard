@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PremiumProvider } from "@/contexts/PremiumContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -34,54 +35,62 @@ import AccountData from "./pages/AccountData";
 // Admin routes
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminRecipes from "./pages/AdminRecipes";
+import AdminUsers from "./pages/AdminUsers";
+import AdminSettings from "./pages/AdminSettings";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* User-facing routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/filters" element={<Filters />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/recipe/:id" element={<RecipeDetail />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/pantry" element={<Pantry />} />
-          <Route path="/saved-recipes" element={<SavedRecipes />} />
-          <Route path="/cooking-history" element={<CookingHistory />} />
-          <Route path="/meal-planning" element={<MealPlanning />} />
-          <Route path="/shopping-list" element={<ShoppingList />} />
-          <Route path="/payment-methods" element={<PaymentMethods />} />
-          <Route path="/account/privacy" element={<AccountPrivacy />} />
-          <Route path="/account/data" element={<AccountData />} />
-          <Route path="/add-recipe" element={<AddRecipe />} />
-          <Route path="/dietary-preferences" element={<DietaryPreferences />} />
-          <Route path="/health-info" element={<HealthInfo />} />
-          <Route path="/subscription" element={<Subscription />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          
-          {/* Admin routes */}
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          
-          {/* 404 route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <PremiumProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* User-facing routes */}
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/filters" element={<Filters />} />
+            <Route path="/browse" element={<Browse />} />
+            <Route path="/recipe/:id" element={<RecipeDetail />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/pantry" element={<Pantry />} />
+            <Route path="/saved-recipes" element={<SavedRecipes />} />
+            <Route path="/cooking-history" element={<CookingHistory />} />
+            <Route path="/meal-planning" element={<MealPlanning />} />
+            <Route path="/shopping-list" element={<ShoppingList />} />
+            <Route path="/payment-methods" element={<PaymentMethods />} />
+            <Route path="/account/privacy" element={<AccountPrivacy />} />
+            <Route path="/account/data" element={<AccountData />} />
+            <Route path="/add-recipe" element={<AddRecipe />} />
+            <Route path="/dietary-preferences" element={<DietaryPreferences />} />
+            <Route path="/health-info" element={<HealthInfo />} />
+            <Route path="/subscription" element={<Subscription />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/recipes" element={<AdminRecipes />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            
+            {/* 404 route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </PremiumProvider>
   </QueryClientProvider>
 );
 

@@ -8,14 +8,15 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { usePremium } from "@/contexts/PremiumContext";
 
 export default function Profile() {
   const [user] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
-    isPremium: false,
   });
   const { toast } = useToast();
+  const { isPremium, setPremiumStatus } = usePremium();
   
   const handleLogout = () => {
     toast({
@@ -54,9 +55,15 @@ export default function Profile() {
               </Link>
             </div>
           </div>
+          {isPremium && (
+            <div className="mt-4 bg-green-100 text-green-800 rounded-lg p-2 text-sm flex items-center">
+              <Star size={16} className="mr-2 text-chef-primary" />
+              <span className="font-medium">Premium Member</span>
+            </div>
+          )}
         </div>
         
-        {!user.isPremium && (
+        {!isPremium && (
           <div className="bg-gradient-to-r from-chef-primary to-chef-tertiary rounded-xl p-6 text-white mb-6">
             <h3 className="font-bold text-lg mb-2">Upgrade to Premium</h3>
             <p className="text-white/90 text-sm mb-4">
@@ -68,7 +75,7 @@ export default function Profile() {
                   View Plans
                 </Button>
               </Link>
-              <Link to="/payment" className="flex-1">
+              <Link to="/payment?plan=premium-monthly" className="flex-1">
                 <Button className="bg-black/20 text-white hover:bg-black/30 w-full">
                   Try Free
                 </Button>
@@ -153,6 +160,20 @@ export default function Profile() {
                 <div className="flex items-center">
                   <CreditCard size={20} className="text-gray-500 mr-3" />
                   <span>Payment Methods</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/account/privacy" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <Shield size={20} className="text-gray-500 mr-3" />
+                  <span>Privacy Settings</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/account/data" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <FileText size={20} className="text-gray-500 mr-3" />
+                  <span>Manage Your Data</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>

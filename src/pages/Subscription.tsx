@@ -1,10 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { useToast } from "@/hooks/use-toast";
+import { usePremium } from "@/contexts/PremiumContext";
 
 interface PlanFeature {
   name: string;
@@ -60,19 +61,41 @@ const features: PlanFeature[] = [
 ];
 
 export default function Subscription() {
-  const [selectedPlan, setSelectedPlan] = useState<string>("free");
+  const { isPremium, setPremiumStatus } = usePremium();
+  const [selectedPlan, setSelectedPlan] = useState<string>(isPremium ? "premium-monthly" : "free");
+  const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Update selected plan when premium status changes
+  useEffect(() => {
+    if (isPremium) {
+      setSelectedPlan("premium-monthly");
+    } else {
+      setSelectedPlan("free");
+    }
+  }, [isPremium]);
 
   const handleSelectPlan = (planId: string) => {
     setSelectedPlan(planId);
     if (planId !== "free") {
       // In a real app, navigate to payment screen with the selected plan
-      window.location.href = `/payment?plan=${planId}`;
+      navigate(`/payment?plan=${planId}`);
     } else {
-      toast({
-        title: "Free Plan Selected",
-        description: "You are currently on the free plan."
-      });
+      // If selecting free plan and currently premium, show confirmation
+      if (isPremium) {
+        if (window.confirm("Are you sure you want to downgrade to the free plan? You will lose access to premium features.")) {
+          setPremiumStatus(false);
+          toast({
+            title: "Plan Downgraded",
+            description: "You are now on the free plan."
+          });
+        }
+      } else {
+        toast({
+          title: "Free Plan Selected",
+          description: "You are currently on the free plan."
+        });
+      }
     }
   };
 
@@ -91,13 +114,27 @@ export default function Subscription() {
       </header>
 
       <main className="p-6">
+        {isPremium && (
+          <div className="bg-green-100 border border-green-300 text-green-800 rounded-xl p-4 mb-6">
+            <div className="flex items-center">
+              <Check size={20} className="mr-2" />
+              <div>
+                <p className="font-medium">You are subscribed to Premium</p>
+                <p className="text-sm">Your subscription renews on May 7, 2026.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-6 mb-8">
           {plans.map((plan) => (
             <div 
               key={plan.id}
               className={`bg-white rounded-xl p-5 border ${
-                plan.highlighted 
+                isPremium && plan.id.includes('premium') 
                   ? 'border-chef-primary shadow-md' 
+                  : !isPremium && plan.id === 'free'
+                  ? 'border-chef-primary shadow-md'
                   : 'border-gray-200'
               }`}
             >
@@ -115,16 +152,21 @@ export default function Subscription() {
               </div>
               
               <Button 
-                variant={plan.buttonVariant}
+                variant={
+                  (isPremium && plan.id.includes('premium')) || (!isPremium && plan.id === 'free')
+                    ? "outline"
+                    : plan.highlighted ? "default" : "outline"
+                }
                 className={`w-full ${
                   plan.highlighted && plan.buttonVariant === "default"
                     ? 'bg-chef-primary hover:bg-chef-primary/90' 
                     : ''
                 }`}
                 onClick={() => handleSelectPlan(plan.id)}
-                disabled={plan.id === selectedPlan}
               >
-                {plan.id === selectedPlan ? 'Current Plan' : plan.buttonText}
+                {(isPremium && plan.id.includes('premium')) || (!isPremium && plan.id === 'free')
+                  ? 'Current Plan'
+                  : plan.buttonText}
               </Button>
             </div>
           ))}

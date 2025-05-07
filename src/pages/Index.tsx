@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils } from "lucide-react";
@@ -8,13 +8,21 @@ import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";
 import { Category } from "@/types";
 import { Link } from "react-router-dom";
+import { usePremium } from "@/contexts/PremiumContext";
 
 export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("food");
+  const [step, setStep] = useState<"category" | "subcategory" | "filters">("category");
+  const { isPremium } = usePremium();
   
   const filteredSubcategories = subcategories.filter(
     (subcategory) => subcategory.category === selectedCategory
   );
+
+  // Reset the step to subcategory when category changes
+  useEffect(() => {
+    setStep("subcategory");
+  }, [selectedCategory]);
   
   return (
     <AppLayout>
@@ -52,9 +60,9 @@ export default function Index() {
       </header>
       
       <main className="px-6">
-        {/* Select a Category Section - First */}
+        {/* Step 2: Select a Subcategory */}
         <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-2">Select a Category</h2>
+          <h2 className="text-xl font-semibold mb-2">Select a Subcategory</h2>
           <p className="text-gray-600 text-sm">
             Choose a specific category or use the AI chatbot for personalized recipes
           </p>
@@ -66,7 +74,7 @@ export default function Index() {
           ))}
         </div>
         
-        {/* Quick Filter Section - Second */}
+        {/* Quick Filter Section */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold">Quick Filters</h2>
@@ -98,7 +106,7 @@ export default function Index() {
           </div>
         </div>
         
-        {/* Find recipes with pantry ingredients - Third */}
+        {/* Find recipes with pantry ingredients */}
         <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 p-4 rounded-xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-chef-primary text-white p-2 rounded-full">
@@ -115,6 +123,24 @@ export default function Index() {
             </Button>
           </Link>
         </div>
+
+        {/* Add Your Recipe - New Button */}
+        <div className="mb-6 bg-gradient-to-r from-accent/10 to-chef-primary/10 p-4 rounded-xl">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="bg-accent text-white p-2 rounded-full">
+              <ChefHat size={20} />
+            </div>
+            <h2 className="text-lg font-semibold">Share Your Culinary Creation</h2>
+          </div>
+          <p className="text-gray-600 text-sm mb-3">
+            Have a recipe you love? Share it with the Chef AI community!
+          </p>
+          <Link to="/add-recipe">
+            <Button className="w-full bg-accent text-accent-foreground">
+              Add Your Recipe
+            </Button>
+          </Link>
+        </div>
         
         <div className="mt-6 mb-10 text-center">
           <h3 className="text-lg font-semibold mb-2">Need personalized suggestions?</h3>
@@ -123,9 +149,18 @@ export default function Index() {
           </p>
           <Link to={`/chatbot?category=${selectedCategory}`}>
             <Button className="btn-primary">
-              Use AI Chatbot
+              Use AI Chatbot {!isPremium && "(Basic)"}
             </Button>
           </Link>
+          {!isPremium && (
+            <div className="mt-2">
+              <Link to="/subscription">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Upgrade for AI Voice & Image Recognition
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </main>
     </AppLayout>
