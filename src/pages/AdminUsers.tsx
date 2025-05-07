@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +43,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout title="User Management">
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">User Management</h1>
         

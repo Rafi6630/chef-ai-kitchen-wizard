@@ -38,7 +38,7 @@ export default function AdminSettings() {
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout title="Admin Settings">
       <div className="p-6">
         <header className="mb-6">
           <h1 className="text-2xl font-bold">Admin Settings</h1>
