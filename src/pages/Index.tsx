@@ -52,29 +52,53 @@ export default function Index() {
       </header>
       
       <main className="px-6">
-        {/* Quick access buttons */}
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-          <Link to="/saved-recipes" className="flex-shrink-0">
-            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
-              <Star size={15} />
-              <span>Saved Recipes</span>
-            </Button>
-          </Link>
-          <Link to="/cooking-history" className="flex-shrink-0">
-            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
-              <Clock size={15} />
-              <span>History</span>
-            </Button>
-          </Link>
-          <Link to="/browse" className="flex-shrink-0">
-            <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
-              <Globe size={15} />
-              <span>Global Cuisine</span>
-            </Button>
-          </Link>
+        {/* Select a Category Section - Moved Up */}
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold mb-2">Select a Category</h2>
+          <p className="text-gray-600 text-sm">
+            Choose a specific category or use the AI chatbot for personalized recipes
+          </p>
         </div>
         
-        {/* Find recipes with pantry ingredients */}
+        <div className="grid grid-cols-4 gap-2 mb-6">
+          {filteredSubcategories.map((subcategory) => (
+            <CategoryCard key={subcategory.id} subcategory={subcategory} />
+          ))}
+        </div>
+        
+        {/* Quick Filter Section - Added Below Categories */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-semibold">Quick Filters</h2>
+            <Link to="/filters">
+              <Button variant="ghost" size="sm" className="text-chef-primary">
+                All Filters
+              </Button>
+            </Link>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <Link to="/saved-recipes" className="flex-shrink-0">
+              <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+                <Star size={15} />
+                <span>Saved Recipes</span>
+              </Button>
+            </Link>
+            <Link to="/cooking-history" className="flex-shrink-0">
+              <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+                <Clock size={15} />
+                <span>History</span>
+              </Button>
+            </Link>
+            <Link to="/browse" className="flex-shrink-0">
+              <Button variant="outline" size="sm" className="border-gray-200 rounded-full flex items-center gap-1">
+                <Globe size={15} />
+                <span>Global Cuisine</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+        
+        {/* Find recipes with pantry ingredients - Moved Down */}
         <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 p-4 rounded-xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-chef-primary text-white p-2 rounded-full">
@@ -92,20 +116,7 @@ export default function Index() {
           </Link>
         </div>
         
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Select a Category</h2>
-          <p className="text-gray-600 text-sm">
-            Choose a specific category or use the AI chatbot for personalized recipes
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-3">
-          {filteredSubcategories.map((subcategory) => (
-            <CategoryCard key={subcategory.id} subcategory={subcategory} />
-          ))}
-        </div>
-        
-        <div className="mt-8 mb-10 text-center">
+        <div className="mt-6 mb-10 text-center">
           <h3 className="text-lg font-semibold mb-2">Need personalized suggestions?</h3>
           <p className="text-gray-600 mb-4">
             Tell our AI what ingredients you have and get recipe recommendations

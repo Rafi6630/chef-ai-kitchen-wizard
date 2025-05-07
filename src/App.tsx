@@ -12,12 +12,19 @@ import Filters from "./pages/Filters";
 import Browse from "./pages/Browse";
 import RecipeDetail from "./pages/RecipeDetail";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import Settings from "./pages/Settings";
 import Pantry from "./pages/Pantry";
 import SavedRecipes from "./pages/SavedRecipes";
 import CookingHistory from "./pages/CookingHistory";
 import Subscription from "./pages/Subscription";
 import Payment from "./pages/Payment";
+import MealPlanning from "./pages/MealPlanning";
+import DietaryPreferences from "./pages/DietaryPreferences";
+import HealthInfo from "./pages/HealthInfo";
+import About from "./pages/About";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 // Admin routes
 import AdminLogin from "./pages/AdminLogin";
@@ -41,12 +48,19 @@ const App = () => (
           <Route path="/browse" element={<Browse />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pantry" element={<Pantry />} />
           <Route path="/saved-recipes" element={<SavedRecipes />} />
           <Route path="/cooking-history" element={<CookingHistory />} />
+          <Route path="/meal-planning" element={<MealPlanning />} />
+          <Route path="/dietary-preferences" element={<DietaryPreferences />} />
+          <Route path="/health-info" element={<HealthInfo />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
           
           {/* Admin routes */}
           <Route path="/admin" element={<AdminLogin />} />

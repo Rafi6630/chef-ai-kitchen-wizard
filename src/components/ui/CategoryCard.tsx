@@ -10,15 +10,17 @@ export default function CategoryCard({ subcategory }: CategoryCardProps) {
   return (
     <Link 
       to={`/chatbot?category=${subcategory.category}&subcategory=${subcategory.id}`}
-      className="category-card aspect-square"
+      className="category-card"
     >
-      <img 
-        src={subcategory.imageUrl} 
-        alt={subcategory.name} 
-        className="w-full h-full object-cover rounded-lg"
-      />
-      <div className="category-card-content">
-        <h3 className="text-xs font-bold line-clamp-1">{subcategory.name}</h3>
+      <div className="aspect-square overflow-hidden rounded-lg">
+        <img 
+          src={subcategory.imageUrl} 
+          alt={subcategory.name} 
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="mt-1">
+        <h3 className="text-xs font-medium text-center line-clamp-1">{subcategory.name}</h3>
       </div>
     </Link>
   );

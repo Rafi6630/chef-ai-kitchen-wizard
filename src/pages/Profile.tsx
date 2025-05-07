@@ -2,7 +2,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/layout/AppLayout";
-import { ChevronRight, Star, Clock, Settings, CreditCard, User as UserIcon, Heart, List, Book, BookOpen } from "lucide-react";
+import { 
+  ChevronRight, Star, Clock, Settings, CreditCard, User as UserIcon, 
+  Heart, List, Book, BookOpen, Calendar, Bookmark, FileText, Shield, Info 
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -76,7 +79,7 @@ export default function Profile() {
         
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold text-lg mb-3">Favorites & History</h3>
+            <h3 className="font-semibold text-lg mb-3">Recipes & Planning</h3>
             <div className="bg-white rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
               <Link to="/saved-recipes" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
@@ -92,10 +95,17 @@ export default function Profile() {
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
-              <Link to="/meal-plans" className="flex items-center justify-between p-4">
+              <Link to="/meal-planning" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <Calendar size={20} className="text-gray-500 mr-3" />
+                  <span>Meal Planning</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/shopping-list" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
                   <List size={20} className="text-gray-500 mr-3" />
-                  <span>Meal Plans</span>
+                  <span>Shopping Lists</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
@@ -112,17 +122,17 @@ export default function Profile() {
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
-              <Link to="/shopping-list" className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <Book size={20} className="text-gray-500 mr-3" />
-                  <span>Shopping List</span>
-                </div>
-                <ChevronRight size={18} className="text-gray-400" />
-              </Link>
               <Link to="/dietary-preferences" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
                   <UserIcon size={20} className="text-gray-500 mr-3" />
                   <span>Dietary Preferences</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/health-info" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <Bookmark size={20} className="text-gray-500 mr-3" />
+                  <span>Health Information</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
@@ -154,19 +164,22 @@ export default function Profile() {
             <div className="bg-white rounded-xl divide-y divide-gray-100 shadow-sm overflow-hidden">
               <Link to="/about" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
+                  <Info size={20} className="text-gray-500 mr-3" />
                   <span>About Chef AI</span>
-                </div>
-                <ChevronRight size={18} className="text-gray-400" />
-              </Link>
-              <Link to="/privacy" className="flex items-center justify-between p-4">
-                <div className="flex items-center">
-                  <span>Privacy Policy</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
               <Link to="/terms" className="flex items-center justify-between p-4">
                 <div className="flex items-center">
+                  <FileText size={20} className="text-gray-500 mr-3" />
                   <span>Terms of Service</span>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </Link>
+              <Link to="/privacy" className="flex items-center justify-between p-4">
+                <div className="flex items-center">
+                  <Shield size={20} className="text-gray-500 mr-3" />
+                  <span>Privacy Policy</span>
                 </div>
                 <ChevronRight size={18} className="text-gray-400" />
               </Link>
