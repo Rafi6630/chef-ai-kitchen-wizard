@@ -2,16 +2,20 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/layout/AppLayout";
-import { ArrowLeft, Heart, Clock, ChefHat, Share2, User, Bookmark } from "lucide-react";
+import { ArrowLeft, Heart, Clock, ChefHat, Share2, User, Bookmark, PlayCircle } from "lucide-react";
 import { recipes } from "@/data/mockData";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import PremiumFeatureOverlay from "@/components/subscription/PremiumFeatureOverlay";
 
 export default function RecipeDetail() {
   const { id } = useParams<{ id: string }>();
   const recipe = recipes.find((r) => r.id === id);
   const [isFavorite, setIsFavorite] = useState(recipe?.isFavorite || false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [usageCount, setUsageCount] = useState(recipe?.usageCount || Math.floor(Math.random() * 100) + 50);
   const { toast } = useToast();
+  const isPremium = false; // In real app, would be fetched from auth/subscription state
   
   if (!recipe) {
     return (
@@ -40,6 +44,14 @@ export default function RecipeDetail() {
     toast({
       title: "Share Recipe",
       description: "Share feature coming soon!",
+    });
+  };
+
+  const handleUseCooking = () => {
+    setUsageCount(prevCount => prevCount + 1);
+    toast({
+      title: "Recipe in Use",
+      description: "Step-by-step cooking mode activated!",
     });
   };
   
@@ -106,6 +118,50 @@ export default function RecipeDetail() {
               <span className="text-sm">{recipe.servings} servings</span>
             </div>
           </div>
+
+          <div className="mt-4 flex items-center">
+            <span className="text-sm text-gray-600">Used {usageCount} times by Chef AI users</span>
+          </div>
+          
+          {/* Video Preview (Premium Feature) */}
+          <div className="mt-6">
+            <button 
+              className="w-full rounded-xl bg-gray-100 h-36 flex flex-col items-center justify-center relative overflow-hidden"
+              onClick={() => setShowVideo(!showVideo)}
+            >
+              {showVideo && isPremium ? (
+                <video 
+                  className="w-full h-full object-cover" 
+                  controls 
+                  autoPlay
+                  src="https://example.com/recipe-video.mp4"
+                ></video>
+              ) : (
+                <>
+                  <PlayCircle size={40} className="text-chef-primary mb-2" />
+                  <p className="text-gray-700 font-medium">Watch Cooking Video</p>
+                  <p className="text-xs text-gray-500">See how to make this recipe step-by-step</p>
+                  {!isPremium && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="bg-white rounded-lg px-4 py-2 flex items-center">
+                        <Lock size={16} className="text-chef-primary mr-2" />
+                        <span className="text-sm font-medium">Premium Feature</span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Start Cooking Button */}
+          <Button 
+            className="w-full mt-6 bg-chef-primary text-white" 
+            onClick={handleUseCooking}
+          >
+            <ChefHat size={18} className="mr-2" />
+            Start Cooking
+          </Button>
           
           {/* Ingredients */}
           <div className="mt-8">
@@ -145,32 +201,74 @@ export default function RecipeDetail() {
           {/* Nutrition */}
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4">Nutrition</h2>
-            {recipe.isPremiumOnly ? (
-              <div className="bg-gray-100 p-4 rounded-lg text-center">
-                <p className="text-gray-600 mb-2">
-                  Detailed nutritional information is available in the premium version.
-                </p>
-                <Button className="btn-primary mt-2">
-                  Upgrade to Premium
-                </Button>
-              </div>
+            {recipe.isPremiumOnly || !isPremium ? (
+              <>
+                <div className="bg-gray-100 p-4 rounded-lg text-center relative overflow-hidden">
+                  <div className="grid grid-cols-4 gap-4 blur-sm">
+                    <div className="bg-white p-3 rounded-lg text-center">
+                      <p className="text-gray-600 text-xs">Calories</p>
+                      <p className="font-semibold">{recipe.nutritionalInfo.calories}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg text-center">
+                      <p className="text-gray-600 text-xs">Protein</p>
+                      <p className="font-semibold">{recipe.nutritionalInfo.protein}g</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg text-center">
+                      <p className="text-gray-600 text-xs">Carbs</p>
+                      <p className="font-semibold">{recipe.nutritionalInfo.carbs}g</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg text-center">
+                      <p className="text-gray-600 text-xs">Fat</p>
+                      <p className="font-semibold">{recipe.nutritionalInfo.fat}g</p>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-2">
+                        Detailed nutritional information is available in the premium version.
+                      </p>
+                      <Link to="/subscription">
+                        <Button className="btn-primary mt-2">
+                          Upgrade to Premium
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-gray-100 p-3 rounded-lg text-center">
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
                   <p className="text-gray-600 text-xs">Calories</p>
                   <p className="font-semibold">{recipe.nutritionalInfo.calories}</p>
                 </div>
-                <div className="bg-gray-100 p-3 rounded-lg text-center">
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
                   <p className="text-gray-600 text-xs">Protein</p>
                   <p className="font-semibold">{recipe.nutritionalInfo.protein}g</p>
                 </div>
-                <div className="bg-gray-100 p-3 rounded-lg text-center">
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
                   <p className="text-gray-600 text-xs">Carbs</p>
                   <p className="font-semibold">{recipe.nutritionalInfo.carbs}g</p>
                 </div>
-                <div className="bg-gray-100 p-3 rounded-lg text-center">
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
                   <p className="text-gray-600 text-xs">Fat</p>
                   <p className="font-semibold">{recipe.nutritionalInfo.fat}g</p>
+                </div>
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
+                  <p className="text-gray-600 text-xs">Fiber</p>
+                  <p className="font-semibold">3g</p>
+                </div>
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
+                  <p className="text-gray-600 text-xs">Sugar</p>
+                  <p className="font-semibold">12g</p>
+                </div>
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
+                  <p className="text-gray-600 text-xs">Sodium</p>
+                  <p className="font-semibold">450mg</p>
+                </div>
+                <div className="bg-white shadow-sm p-3 rounded-lg text-center">
+                  <p className="text-gray-600 text-xs">Potassium</p>
+                  <p className="font-semibold">340mg</p>
                 </div>
               </div>
             )}
@@ -178,5 +276,25 @@ export default function RecipeDetail() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+// Lock icon for premium features
+function Lock({ size = 24, className = "" }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
   );
 }

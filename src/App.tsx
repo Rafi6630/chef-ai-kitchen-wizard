@@ -26,6 +26,8 @@ import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
+import AddRecipe from "./pages/AddRecipe";
+import ShoppingList from "./pages/ShoppingList";
 // Admin routes
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -54,6 +56,8 @@ const App = () => (
           <Route path="/saved-recipes" element={<SavedRecipes />} />
           <Route path="/cooking-history" element={<CookingHistory />} />
           <Route path="/meal-planning" element={<MealPlanning />} />
+          <Route path="/shopping-list" element={<ShoppingList />} />
+          <Route path="/add-recipe" element={<AddRecipe />} />
           <Route path="/dietary-preferences" element={<DietaryPreferences />} />
           <Route path="/health-info" element={<HealthInfo />} />
           <Route path="/subscription" element={<Subscription />} />

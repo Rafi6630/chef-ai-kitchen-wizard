@@ -30,6 +30,7 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [hasIngredients, setHasIngredients] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -149,16 +150,32 @@ export default function Chatbot() {
   };
   
   const handleVoiceInput = () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Voice input is available in the premium version!",
+      });
+      return;
+    }
+    
     toast({
       title: "Voice Input",
-      description: "Voice input feature coming soon in the premium version!",
+      description: "Voice input activated. Please speak clearly.",
     });
   };
   
   const handleFileUpload = () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Image upload is available in the premium version!",
+      });
+      return;
+    }
+    
     toast({
       title: "Image Upload",
-      description: "Image upload feature coming soon in the premium version!",
+      description: "Please select an image of your ingredients.",
     });
   };
 
@@ -224,6 +241,13 @@ export default function Chatbot() {
             <div ref={messagesEndRef} />
           </div>
         </div>
+        
+        {/* Premium Feature Note */}
+        {!isPremium && (
+          <div className="bg-gray-50 px-6 py-2 border-t border-gray-200 text-xs text-gray-500 text-center">
+            <Link to="/subscription" className="text-chef-primary">Upgrade to Premium</Link> for voice input and image upload
+          </div>
+        )}
         
         {/* Input Area */}
         <form

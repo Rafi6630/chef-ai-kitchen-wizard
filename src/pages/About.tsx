@@ -51,6 +51,20 @@ export default function About() {
             <li>• Nutritional information and health insights</li>
             <li>• Recipe discovery from global cuisines</li>
             <li>• Meal planning capabilities</li>
+            <li>• Shopping list generation</li>
+            <li>• Add your own recipes</li>
+          </ul>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h3 className="font-semibold mb-3">Premium Features</h3>
+          <ul className="text-gray-600 text-sm space-y-2">
+            <li>• Detailed nutritional analysis</li>
+            <li>• Video-guided cooking</li>
+            <li>• AI voice and image recognition</li>
+            <li>• Advanced meal planning and shopping list generation</li>
+            <li>• Ad-free experience</li>
+            <li>• Priority support</li>
           </ul>
         </div>
 

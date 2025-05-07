@@ -2,106 +2,103 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ChefHat, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
     
-    // In a real app, you would authenticate with your backend here
+    // Mock admin authentication - in real app this would call an API
     setTimeout(() => {
-      setIsLoading(false);
-      
-      // For demo purpose, use admin/admin123 as credentials
       if (username === "admin" && password === "admin123") {
         toast({
-          title: "Login successful",
-          description: "Welcome to Chef AI Admin Panel",
+          title: "Login Successful",
+          description: "Welcome to the Admin Dashboard",
         });
+        localStorage.setItem("adminAuthenticated", "true");
         navigate("/admin/dashboard");
       } else {
-        setError("Invalid username or password. Please try again.");
+        toast({
+          title: "Login Failed",
+          description: "Invalid username or password",
+          variant: "destructive"
+        });
       }
+      setIsLoading(false);
     }, 1000);
   };
   
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center">
-      <div className="max-w-md w-full mx-auto p-6">
-        <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-chef-primary text-white rounded-2xl flex items-center justify-center">
-              <ChefHat size={32} />
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <div className="w-20 h-20 bg-chef-primary text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="font-bold text-2xl">CIA</span>
           </div>
-          <h1 className="text-3xl font-bold text-chef-primary">Chef AI Admin</h1>
-          <p className="text-gray-600 mt-2">Manage your application</p>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            Admin Panel Login
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Enter your credentials to access the Admin Dashboard
+          </p>
         </div>
         
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-6">Admin Login</h2>
-          
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input 
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="username" className="sr-only">Username</label>
+              <Input
                 id="username"
+                name="username"
                 type="text"
-                placeholder="admin"
+                autoComplete="username"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-chef-primary focus:border-chef-primary focus:z-10 sm:text-sm"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="input-field"
-                required
               />
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div>
+              <label htmlFor="password" className="sr-only">Password</label>
               <Input
                 id="password"
+                name="password"
                 type="password"
-                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-chef-primary focus:border-chef-primary focus:z-10 sm:text-sm"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input-field"
-                required
               />
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-chef-primary"
+          </div>
+
+          <div>
+            <Button
+              type="submit"
               disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-chef-primary hover:bg-chef-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-chef-primary"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Logging in..." : "Sign in"}
             </Button>
-          </form>
-        </div>
+          </div>
+        </form>
         
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Protected area. Authorized personnel only.</p>
-          <p className="mt-1">
-            Need help? Contact the system administrator.
+        <div className="text-sm text-center">
+          <p className="text-gray-600">
+            For demo purposes, use: <br />
+            Username: <span className="font-semibold">admin</span><br />
+            Password: <span className="font-semibold">admin123</span>
           </p>
         </div>
       </div>

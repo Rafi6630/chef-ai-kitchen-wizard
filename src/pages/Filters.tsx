@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Filters() {
   const [filters, setFilters] = useState<FilterOption[]>(filterOptions);
+  const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -40,8 +41,13 @@ export default function Filters() {
     );
   };
   
+  const selectCuisine = (id: string) => {
+    setSelectedCuisine(selectedCuisine === id ? null : id);
+  };
+  
   const resetFilters = () => {
     setFilters(filters.map(filter => ({ ...filter, isSelected: false })));
+    setSelectedCuisine(null);
     toast({
       title: "Filters Reset",
       description: "All filters have been cleared.",
@@ -77,18 +83,49 @@ export default function Filters() {
       </header>
       
       <div className="p-6 space-y-8">
+        {/* Cuisine/Country - Moved to the top and redesigned */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Cuisine / Country</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {getFiltersByType("cuisine").map(filter => (
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  selectedCuisine === filter.id ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => selectCuisine(filter.id)}
+              >
+                <Checkbox 
+                  id={`cuisine-${filter.id}`} 
+                  checked={selectedCuisine === filter.id}
+                  className="mr-2"
+                />
+                <Label htmlFor={`cuisine-${filter.id}`} className="cursor-pointer w-full">
+                  {filter.name}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+        
         {/* Healthy/Diet-Friendly */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Healthy & Diet-Friendly</h2>
           <div className="grid grid-cols-2 gap-3">
             {getFiltersByType("healthy").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => toggleFilter(filter.id)}
+              >
                 <Checkbox 
                   id={filter.id} 
                   checked={filter.isSelected}
-                  onCheckedChange={() => toggleFilter(filter.id)}
+                  className="mr-2"
                 />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
+                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
               </div>
             ))}
           </div>
@@ -99,30 +136,19 @@ export default function Filters() {
           <h2 className="text-lg font-semibold mb-4">Dietary & Religious Restrictions</h2>
           <div className="grid grid-cols-2 gap-3">
             {getFiltersByType("dietary").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => toggleFilter(filter.id)}
+              >
                 <Checkbox 
                   id={filter.id} 
                   checked={filter.isSelected}
-                  onCheckedChange={() => toggleFilter(filter.id)}
+                  className="mr-2"
                 />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Cuisine/Country */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Cuisine / Country</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {getFiltersByType("cuisine").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
-                <Checkbox 
-                  id={filter.id} 
-                  checked={filter.isSelected}
-                  onCheckedChange={() => toggleFilter(filter.id)}
-                />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
+                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
               </div>
             ))}
           </div>
@@ -131,37 +157,49 @@ export default function Filters() {
         {/* Cooking Time */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Cooking Time</h2>
-          <RadioGroup>
+          <div className="space-y-2">
             {getFiltersByType("time").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => selectOneFilter("time", filter.id)}
+              >
                 <RadioGroupItem 
                   id={filter.id} 
                   value={filter.id}
                   checked={filter.isSelected}
-                  onClick={() => selectOneFilter("time", filter.id)}
+                  className="mr-2"
                 />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
+                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
               </div>
             ))}
-          </RadioGroup>
+          </div>
         </div>
         
         {/* Difficulty */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Difficulty</h2>
-          <RadioGroup>
+          <div className="space-y-2">
             {getFiltersByType("difficulty").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => selectOneFilter("difficulty", filter.id)}
+              >
                 <RadioGroupItem 
                   id={filter.id} 
                   value={filter.id}
                   checked={filter.isSelected}
-                  onClick={() => selectOneFilter("difficulty", filter.id)}
+                  className="mr-2"
                 />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
+                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
               </div>
             ))}
-          </RadioGroup>
+          </div>
         </div>
         
         {/* Available Tools */}
@@ -169,13 +207,19 @@ export default function Filters() {
           <h2 className="text-lg font-semibold mb-4">Available Tools</h2>
           <div className="grid grid-cols-2 gap-3">
             {getFiltersByType("tools").map(filter => (
-              <div key={filter.id} className="flex items-center space-x-2">
+              <div 
+                key={filter.id} 
+                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
+                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                }`}
+                onClick={() => toggleFilter(filter.id)}
+              >
                 <Checkbox 
                   id={filter.id} 
                   checked={filter.isSelected}
-                  onCheckedChange={() => toggleFilter(filter.id)}
+                  className="mr-2"
                 />
-                <Label htmlFor={filter.id}>{filter.name}</Label>
+                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
               </div>
             ))}
           </div>

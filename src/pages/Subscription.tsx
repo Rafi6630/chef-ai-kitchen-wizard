@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowLeft } from "lucide-react";
+import { Check, ArrowLeft, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
+import { useToast } from "@/hooks/use-toast";
 
 interface PlanFeature {
   name: string;
@@ -49,21 +50,29 @@ const features: PlanFeature[] = [
   { name: "Smart pantry (basic)", includedIn: ["free", "premium-monthly", "premium-annual"] },
   { name: "Smart pantry (unlimited items)", includedIn: ["premium-monthly", "premium-annual"] },
   { name: "Detailed nutritional info", includedIn: ["premium-monthly", "premium-annual"] },
-  { name: "Voice-guided cooking", includedIn: ["premium-monthly", "premium-annual"] },
+  { name: "Video-guided cooking", includedIn: ["premium-monthly", "premium-annual"] },
   { name: "Premium recipes", includedIn: ["premium-monthly", "premium-annual"] },
   { name: "Ad-free experience", includedIn: ["premium-monthly", "premium-annual"] },
   { name: "AI meal planning", includedIn: ["premium-monthly", "premium-annual"] },
+  { name: "Shopping list generation", includedIn: ["premium-monthly", "premium-annual"] },
+  { name: "AI voice & image recognition", includedIn: ["premium-monthly", "premium-annual"] },
   { name: "Priority support", includedIn: ["premium-annual"] }
 ];
 
 export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<string>("free");
+  const { toast } = useToast();
 
   const handleSelectPlan = (planId: string) => {
     setSelectedPlan(planId);
     if (planId !== "free") {
       // In a real app, navigate to payment screen with the selected plan
       window.location.href = `/payment?plan=${planId}`;
+    } else {
+      toast({
+        title: "Free Plan Selected",
+        description: "You are currently on the free plan."
+      });
     }
   };
 
@@ -126,7 +135,12 @@ export default function Subscription() {
           <div className="space-y-3">
             {features.map((feature) => (
               <div key={feature.name} className="flex justify-between items-center">
-                <span className="text-sm">{feature.name}</span>
+                <span className="text-sm flex items-center">
+                  {!feature.includedIn.includes("free") && (
+                    <Lock size={14} className="text-chef-primary mr-2" />
+                  )}
+                  {feature.name}
+                </span>
                 <div className="flex space-x-4">
                   {plans.map((plan) => (
                     <div key={plan.id} className="w-16 text-center">
