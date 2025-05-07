@@ -31,6 +31,18 @@ export default function LanguageSelector() {
 
   // Apply language selection to the document and save to localStorage
   useEffect(() => {
+    // Load saved language on component mount
+    const savedLang = localStorage.getItem("preferredLanguage");
+    if (savedLang) {
+      const lang = languages.find(l => l.code === savedLang);
+      if (lang) {
+        setCurrentLanguage(lang);
+      }
+    }
+  }, []); // Run only on component mount
+
+  // Effect to apply language changes when currentLanguage changes
+  useEffect(() => {
     document.documentElement.lang = currentLanguage.code;
     if (currentLanguage.rtl) {
       document.documentElement.dir = "rtl";
@@ -43,24 +55,15 @@ export default function LanguageSelector() {
     
     // In real app, we would load translated strings here
     // For now we just show a toast notification
-    if (currentLanguage.code !== "en") {
-      toast({
-        title: `Language Changed: ${currentLanguage.name}`,
-        description: `The app language has been changed to ${currentLanguage.nativeName}.`,
-      });
-    }
+    toast({
+      title: `Language Changed: ${currentLanguage.name}`,
+      description: `The app language has been changed to ${currentLanguage.nativeName}.`,
+    });
   }, [currentLanguage, toast]);
 
-  // Load saved language on component mount
-  useEffect(() => {
-    const savedLang = localStorage.getItem("preferredLanguage");
-    if (savedLang) {
-      const lang = languages.find(l => l.code === savedLang);
-      if (lang) {
-        setCurrentLanguage(lang);
-      }
-    }
-  }, []);
+  const handleLanguageChange = (lang: Language) => {
+    setCurrentLanguage(lang);
+  };
 
   return (
     <DropdownMenu>
@@ -79,7 +82,7 @@ export default function LanguageSelector() {
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
-            onClick={() => setCurrentLanguage(language)}
+            onClick={() => handleLanguageChange(language)}
             className="flex items-center justify-between"
           >
             <span>

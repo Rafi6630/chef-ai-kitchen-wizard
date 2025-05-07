@@ -52,7 +52,7 @@ export default function Index() {
       </header>
       
       <main className="px-6">
-        {/* Select a Category Section - Moved Up */}
+        {/* Select a Category Section - First */}
         <div className="mb-4">
           <h2 className="text-xl font-semibold mb-2">Select a Category</h2>
           <p className="text-gray-600 text-sm">
@@ -66,7 +66,7 @@ export default function Index() {
           ))}
         </div>
         
-        {/* Quick Filter Section - Added Below Categories */}
+        {/* Quick Filter Section - Second */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-semibold">Quick Filters</h2>
@@ -98,7 +98,7 @@ export default function Index() {
           </div>
         </div>
         
-        {/* Find recipes with pantry ingredients - Moved Down */}
+        {/* Find recipes with pantry ingredients - Third */}
         <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 p-4 rounded-xl">
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-chef-primary text-white p-2 rounded-full">

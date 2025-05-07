@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ArrowLeft, Plus, Calendar as CalendarIcon, ShoppingBag } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Recipe } from "@/types";
 import { recipes } from "@/data/mockData";
@@ -18,6 +18,7 @@ export default function MealPlanning() {
   const [isPremium, setIsPremium] = useState(false);
   const [showShoppingList, setShowShoppingList] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Format date to use as key in mealPlan object
   const formatDate = (date: Date | undefined): string => {
@@ -43,20 +44,31 @@ export default function MealPlanning() {
         [mealType]: randomRecipe
       }
     }));
+    
+    toast({
+      title: "Meal Added",
+      description: `${randomRecipe.title} has been added to your ${mealType}.`,
+    });
   };
 
   const handleChangeMeal = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
     if (!selectedDate) return;
     handleAddMeal(mealType);
-    toast({
-      title: "Meal Changed",
-      description: `Your ${mealType} has been updated successfully.`,
-    });
   };
 
   const handleGenerateShoppingList = () => {
-    if (!isPremium) return;
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Shopping list generation is a premium feature. Please upgrade to access it.",
+      });
+      return;
+    }
     setShowShoppingList(true);
+  };
+  
+  const handleViewShoppingList = () => {
+    navigate('/shopping-list');
   };
 
   const allIngredients = Object.values(mealPlan).flatMap(dayPlan => {
@@ -217,10 +229,10 @@ export default function MealPlanning() {
                 
                 <Button 
                   className="w-full bg-chef-primary" 
-                  onClick={handleGenerateShoppingList}
+                  onClick={handleViewShoppingList}
                 >
                   <ShoppingBag size={18} className="mr-2" />
-                  Generate Shopping List
+                  View Shopping List
                 </Button>
               </div>
             )}

@@ -1,271 +1,257 @@
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import AppLayout from "@/components/layout/AppLayout";
 import { ArrowLeft, Plus, Trash2, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import AppLayout from "@/components/layout/AppLayout";
-import { useToast } from "@/hooks/use-toast";
+import { Category } from "@/types";
+
+interface RecipeFormData {
+  title: string;
+  description: string;
+  prepTime: number;
+  cookTime: number;
+  servings: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  cuisine: string;
+  category: Category;
+  subcategory: string;
+  instructions: string[];
+  nutritionalInfo: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+}
+
+interface Ingredient {
+  id: string;
+  name: string;
+  quantity: string;
+  unit: string;
+}
 
 export default function AddRecipe() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [cuisine, setCuisine] = useState("");
-  const [difficulty, setDifficulty] = useState("");
-  const [prepTime, setPrepTime] = useState("");
-  const [cookTime, setCookTime] = useState("");
-  const [servings, setServings] = useState("");
-  const [ingredients, setIngredients] = useState<{ name: string; quantity: string; unit: string }[]>(
-    [{ name: "", quantity: "", unit: "" }]
-  );
-  const [instructions, setInstructions] = useState<string[]>([""]); 
-  const [images, setImages] = useState<File[]>([]);
-  const [imageUrl, setImageUrl] = useState<string>("");
-  
+  const { register, handleSubmit, formState: { errors } } = useForm<RecipeFormData>();
+  const [ingredients, setIngredients] = useState<Ingredient[]>([
+    { id: '1', name: '', quantity: '', unit: '' }
+  ]);
+  const [instructions, setInstructions] = useState<string[]>(['']);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   
-  const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: "", quantity: "", unit: "" }]);
-  };
-  
-  const handleRemoveIngredient = (index: number) => {
-    const newIngredients = [...ingredients];
-    newIngredients.splice(index, 1);
-    setIngredients(newIngredients);
-  };
-  
-  const handleIngredientChange = (index: number, field: string, value: string) => {
-    const newIngredients = [...ingredients];
-    newIngredients[index] = { ...newIngredients[index], [field]: value };
-    setIngredients(newIngredients);
-  };
-  
-  const handleAddInstruction = () => {
-    setInstructions([...instructions, ""]);
-  };
-  
-  const handleRemoveInstruction = (index: number) => {
-    const newInstructions = [...instructions];
-    newInstructions.splice(index, 1);
-    setInstructions(newInstructions);
-  };
-  
-  const handleInstructionChange = (index: number, value: string) => {
-    const newInstructions = [...instructions];
-    newInstructions[index] = value;
-    setInstructions(newInstructions);
-  };
-  
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const filesArray = Array.from(e.target.files);
-      setImages(prevImages => [...prevImages, ...filesArray]);
-      
-      // Create a preview URL for the first image
-      if (imageUrl === "") {
-        const fileUrl = URL.createObjectURL(e.target.files[0]);
-        setImageUrl(fileUrl);
-      }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
   
-  const handleRemoveImage = (index: number) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
-    
-    // Update preview URL if needed
-    if (images.length === 1) {
-      setImageUrl("");
-    } else if (index === 0 && newImages.length > 0) {
-      setImageUrl(URL.createObjectURL(newImages[0]));
+  const addIngredient = () => {
+    setIngredients([
+      ...ingredients, 
+      { id: `${ingredients.length + 1}`, name: '', quantity: '', unit: '' }
+    ]);
+  };
+  
+  const removeIngredient = (id: string) => {
+    if (ingredients.length > 1) {
+      setIngredients(ingredients.filter(ing => ing.id !== id));
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate form
-    if (!title || !description || !cuisine || !difficulty || !prepTime || !cookTime || !servings) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
+  const updateIngredient = (id: string, field: keyof Ingredient, value: string) => {
+    setIngredients(
+      ingredients.map(ing => 
+        ing.id === id ? { ...ing, [field]: value } : ing
+      )
+    );
+  };
+  
+  const addInstruction = () => {
+    setInstructions([...instructions, '']);
+  };
+  
+  const removeInstruction = (index: number) => {
+    if (instructions.length > 1) {
+      setInstructions(instructions.filter((_, i) => i !== index));
     }
-    
-    if (ingredients.length === 0 || ingredients.some(i => !i.name)) {
-      toast({
-        title: "Missing Ingredients",
-        description: "Please add at least one ingredient.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (instructions.length === 0 || instructions.some(i => !i)) {
-      toast({
-        title: "Missing Instructions",
-        description: "Please add at least one instruction step.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (images.length === 0) {
-      toast({
-        title: "Missing Image",
-        description: "Please upload at least one image.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Submit recipe
+  };
+  
+  const updateInstruction = (index: number, value: string) => {
+    setInstructions(
+      instructions.map((instruction, i) => 
+        i === index ? value : instruction
+      )
+    );
+  };
+  
+  const onSubmit = (data: RecipeFormData) => {
+    // In a real app, this would upload the image and send the data to a backend
+    // For now, just show a success message
     toast({
       title: "Recipe Submitted",
-      description: "Your recipe has been submitted for review.",
+      description: "Your recipe has been submitted and is pending approval.",
     });
     
-    // In a real app, we would send the data to the server
+    // Log the combined data
     console.log({
-      title,
-      description,
-      cuisine,
-      difficulty,
-      prepTime,
-      cookTime,
-      servings,
-      ingredients,
-      instructions,
-      images
+      ...data,
+      ingredients: ingredients.filter(ing => ing.name.trim() !== ''),
+      instructions: instructions.filter(instr => instr.trim() !== ''),
+      imageUrl: imagePreview // In a real app, this would be the uploaded image URL
     });
-    
-    // Reset form
-    setTitle("");
-    setDescription("");
-    setCuisine("");
-    setDifficulty("");
-    setPrepTime("");
-    setCookTime("");
-    setServings("");
-    setIngredients([{ name: "", quantity: "", unit: "" }]);
-    setInstructions([""]);
-    setImages([]);
-    setImageUrl("");
   };
   
   return (
     <AppLayout>
       <header className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center mb-1">
-          <Link to="/profile" className="mr-3">
+          <Link to="/" className="mr-3">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeft size={20} />
             </Button>
           </Link>
           <h1 className="text-2xl font-bold">Add Your Recipe</h1>
         </div>
-        <p className="text-gray-600 text-sm">Share your cooking expertise with the community</p>
+        <p className="text-gray-600 text-sm">Share your culinary creations with the community</p>
       </header>
-
+      
       <main className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Recipe Image */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Recipe Photos</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
-              {imageUrl ? (
+          <div className="space-y-2">
+            <Label htmlFor="image">Recipe Image</Label>
+            <div className="flex items-center gap-4">
+              {imagePreview ? (
                 <div className="relative">
-                  <img src={imageUrl} alt="Recipe preview" className="mx-auto h-48 object-cover rounded-lg" />
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {images.map((img, index) => (
-                      <div key={index} className="relative">
-                        <div className="w-16 h-16 rounded-md bg-gray-100 flex items-center justify-center">
-                          <span className="text-xs">{img.name.substring(0, 10)}</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1"
-                          onClick={() => handleRemoveImage(index)}
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    ))}
-                    <label className="w-16 h-16 rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer">
-                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                      <Plus size={24} className="text-gray-400" />
-                    </label>
-                  </div>
+                  <img 
+                    src={imagePreview} 
+                    alt="Recipe preview" 
+                    className="w-24 h-24 rounded-lg object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
                 </div>
               ) : (
-                <label className="cursor-pointer block">
-                  <div className="flex flex-col items-center justify-center">
-                    <Upload size={32} className="text-gray-400 mb-2" />
-                    <span className="text-gray-600 mb-1">Upload Recipe Photos</span>
-                    <span className="text-gray-400 text-xs">Click to browse or drag images here</span>
-                  </div>
+                <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400">
+                  <Upload className="text-gray-400" size={24} />
+                  <span className="text-xs text-gray-500 mt-1">Upload</span>
                   <input 
                     type="file" 
-                    accept="image/*" 
-                    onChange={handleImageUpload}
-                    className="hidden" 
-                    multiple
+                    id="image" 
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
                   />
                 </label>
               )}
+              
+              <div className="text-sm text-gray-500">
+                <p>Upload a high-quality image of your recipe</p>
+                <p>Max file size: 5MB</p>
+              </div>
             </div>
           </div>
           
-          {/* Recipe Basic Info */}
+          {/* Basic Info */}
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Recipe Title</label>
+            <h2 className="text-lg font-semibold">Basic Information</h2>
+            
+            <div className="space-y-2">
+              <Label htmlFor="title">Recipe Title</Label>
               <Input 
-                value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
-                placeholder="Give your recipe a name"
-                required 
+                id="title"
+                placeholder="e.g., Homemade Chocolate Chip Cookies"
+                {...register("title", { required: true })}
               />
+              {errors.title && <p className="text-red-500 text-sm">Title is required</p>}
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea 
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                placeholder="Tell us about your recipe"
-                rows={3}
-                required
+                id="description"
+                placeholder="A brief description of your recipe..."
+                {...register("description", { required: true })}
               />
+              {errors.description && <p className="text-red-500 text-sm">Description is required</p>}
             </div>
             
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cuisine Type</label>
-                <Select value={cuisine} onValueChange={setCuisine}>
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select onValueChange={(val: Category) => register("category").onChange({
+                  target: { name: "category", value: val }
+                })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select cuisine" />
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="italian">Italian</SelectItem>
-                    <SelectItem value="mexican">Mexican</SelectItem>
-                    <SelectItem value="indian">Indian</SelectItem>
-                    <SelectItem value="chinese">Chinese</SelectItem>
-                    <SelectItem value="middle-eastern">Middle Eastern</SelectItem>
-                    <SelectItem value="american">American</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="food">Food</SelectItem>
+                    <SelectItem value="desserts">Desserts</SelectItem>
+                    <SelectItem value="drinks">Drinks</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.category && <p className="text-red-500 text-sm">Category is required</p>}
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty</label>
-                <Select value={difficulty} onValueChange={setDifficulty}>
+              <div className="space-y-2">
+                <Label htmlFor="subcategory">Subcategory</Label>
+                <Input 
+                  id="subcategory"
+                  placeholder="e.g., Pasta, Salad, Soup"
+                  {...register("subcategory", { required: true })}
+                />
+                {errors.subcategory && <p className="text-red-500 text-sm">Subcategory is required</p>}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cuisine">Cuisine</Label>
+                <Input 
+                  id="cuisine"
+                  placeholder="e.g., Italian, Mexican, Thai"
+                  {...register("cuisine", { required: true })}
+                />
+                {errors.cuisine && <p className="text-red-500 text-sm">Cuisine is required</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="difficulty">Difficulty</Label>
+                <Select onValueChange={(val) => register("difficulty").onChange({
+                  target: { name: "difficulty", value: val }
+                })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select difficulty" />
                   </SelectTrigger>
@@ -275,142 +261,201 @@ export default function AddRecipe() {
                     <SelectItem value="hard">Hard</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.difficulty && <p className="text-red-500 text-sm">Difficulty is required</p>}
               </div>
             </div>
             
             <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prep Time (mins)</label>
+              <div className="space-y-2">
+                <Label htmlFor="prepTime">Prep Time (mins)</Label>
                 <Input 
-                  value={prepTime} 
-                  onChange={(e) => setPrepTime(e.target.value)} 
+                  id="prepTime"
                   type="number"
                   min="0"
-                  placeholder="20"
-                  required
+                  {...register("prepTime", { required: true, valueAsNumber: true })}
                 />
+                {errors.prepTime && <p className="text-red-500 text-sm">Prep time is required</p>}
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cook Time (mins)</label>
+              <div className="space-y-2">
+                <Label htmlFor="cookTime">Cook Time (mins)</Label>
                 <Input 
-                  value={cookTime} 
-                  onChange={(e) => setCookTime(e.target.value)}
-                  type="number" 
-                  min="0"
-                  placeholder="30"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Servings</label>
-                <Input 
-                  value={servings} 
-                  onChange={(e) => setServings(e.target.value)}
+                  id="cookTime"
                   type="number"
-                  min="1" 
-                  placeholder="4"
-                  required
+                  min="0"
+                  {...register("cookTime", { required: true, valueAsNumber: true })}
                 />
+                {errors.cookTime && <p className="text-red-500 text-sm">Cook time is required</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="servings">Servings</Label>
+                <Input 
+                  id="servings"
+                  type="number"
+                  min="1"
+                  {...register("servings", { required: true, valueAsNumber: true })}
+                />
+                {errors.servings && <p className="text-red-500 text-sm">Servings is required</p>}
               </div>
             </div>
           </div>
           
           {/* Ingredients */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Ingredients</label>
-              <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient}>
-                <Plus size={16} className="mr-1" />
-                Add Ingredient
-              </Button>
-            </div>
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Ingredients</h2>
             
-            <div className="space-y-3">
-              {ingredients.map((ingredient, index) => (
-                <div key={index} className="flex gap-2">
+            {ingredients.map((ingredient, index) => (
+              <div key={ingredient.id} className="grid grid-cols-12 gap-2 items-end">
+                <div className="col-span-5">
+                  <Label htmlFor={`ingredient-name-${ingredient.id}`}>Name</Label>
                   <Input 
-                    value={ingredient.quantity} 
-                    onChange={(e) => handleIngredientChange(index, "quantity", e.target.value)}
-                    placeholder="Amount"
-                    className="w-20 flex-shrink-0"
+                    id={`ingredient-name-${ingredient.id}`}
+                    placeholder="e.g., Sugar"
+                    value={ingredient.name}
+                    onChange={(e) => updateIngredient(ingredient.id, 'name', e.target.value)}
                   />
-                  <Input 
-                    value={ingredient.unit} 
-                    onChange={(e) => handleIngredientChange(index, "unit", e.target.value)}
-                    placeholder="Unit"
-                    className="w-24 flex-shrink-0"
-                  />
-                  <Input 
-                    value={ingredient.name} 
-                    onChange={(e) => handleIngredientChange(index, "name", e.target.value)}
-                    placeholder="Ingredient name"
-                    className="flex-grow"
-                  />
-                  {ingredients.length > 1 && (
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleRemoveIngredient(index)}
-                      className="flex-shrink-0"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  )}
                 </div>
-              ))}
-            </div>
+                <div className="col-span-3">
+                  <Label htmlFor={`ingredient-quantity-${ingredient.id}`}>Quantity</Label>
+                  <Input 
+                    id={`ingredient-quantity-${ingredient.id}`}
+                    placeholder="e.g., 2"
+                    value={ingredient.quantity}
+                    onChange={(e) => updateIngredient(ingredient.id, 'quantity', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-3">
+                  <Label htmlFor={`ingredient-unit-${ingredient.id}`}>Unit</Label>
+                  <Input 
+                    id={`ingredient-unit-${ingredient.id}`}
+                    placeholder="e.g., cups"
+                    value={ingredient.unit}
+                    onChange={(e) => updateIngredient(ingredient.id, 'unit', e.target.value)}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <Button 
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-full"
+                    onClick={() => removeIngredient(ingredient.id)}
+                  >
+                    <Trash2 size={18} />
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            <Button 
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={addIngredient}
+            >
+              <Plus size={18} className="mr-2" />
+              Add Ingredient
+            </Button>
           </div>
           
           {/* Instructions */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">Instructions</label>
-              <Button type="button" variant="outline" size="sm" onClick={handleAddInstruction}>
-                <Plus size={16} className="mr-1" />
-                Add Step
-              </Button>
-            </div>
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Instructions</h2>
             
-            <div className="space-y-3">
-              {instructions.map((instruction, index) => (
-                <div key={index} className="flex gap-2 items-start">
-                  <div className="w-6 h-6 rounded-full bg-chef-primary text-white flex items-center justify-center flex-shrink-0 mt-2">
-                    {index + 1}
-                  </div>
-                  <Textarea 
-                    value={instruction} 
-                    onChange={(e) => handleInstructionChange(index, e.target.value)}
-                    placeholder="Explain this step..."
-                    className="flex-grow"
-                    rows={2}
-                  />
-                  {instructions.length > 1 && (
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => handleRemoveInstruction(index)}
-                      className="flex-shrink-0 mt-1"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  )}
+            {instructions.map((instruction, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <div className="mt-2 bg-chef-primary/10 text-chef-primary rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0">
+                  {index + 1}
                 </div>
-              ))}
+                <div className="flex-1">
+                  <Label htmlFor={`instruction-${index}`} className="sr-only">
+                    Step {index + 1}
+                  </Label>
+                  <Textarea 
+                    id={`instruction-${index}`}
+                    placeholder={`Step ${index + 1}...`}
+                    value={instruction}
+                    onChange={(e) => updateInstruction(index, e.target.value)}
+                  />
+                </div>
+                <Button 
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-full mt-1"
+                  onClick={() => removeInstruction(index)}
+                >
+                  <Trash2 size={18} />
+                </Button>
+              </div>
+            ))}
+            
+            <Button 
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={addInstruction}
+            >
+              <Plus size={18} className="mr-2" />
+              Add Step
+            </Button>
+          </div>
+          
+          {/* Nutritional Info */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Nutritional Information (per serving)</h2>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="calories">Calories</Label>
+                <Input 
+                  id="calories"
+                  type="number"
+                  placeholder="e.g., 250"
+                  min="0"
+                  {...register("nutritionalInfo.calories", { valueAsNumber: true })}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="protein">Protein (g)</Label>
+                <Input 
+                  id="protein"
+                  type="number"
+                  placeholder="e.g., 15"
+                  min="0"
+                  {...register("nutritionalInfo.protein", { valueAsNumber: true })}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="carbs">Carbohydrates (g)</Label>
+                <Input 
+                  id="carbs"
+                  type="number"
+                  placeholder="e.g., 30"
+                  min="0"
+                  {...register("nutritionalInfo.carbs", { valueAsNumber: true })}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="fat">Fat (g)</Label>
+                <Input 
+                  id="fat"
+                  type="number"
+                  placeholder="e.g., 10"
+                  min="0"
+                  {...register("nutritionalInfo.fat", { valueAsNumber: true })}
+                />
+              </div>
             </div>
           </div>
           
-          <div className="pt-4">
-            <Button type="submit" className="w-full bg-chef-primary">
-              Submit Recipe for Review
-            </Button>
-            <p className="text-xs text-gray-500 text-center mt-2">
-              Your recipe will be reviewed by our team before being published.
-            </p>
-          </div>
+          <Button type="submit" className="w-full bg-chef-primary">
+            Submit Recipe for Approval
+          </Button>
         </form>
       </main>
     </AppLayout>

@@ -1,18 +1,44 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import AppLayout from "@/components/layout/AppLayout";
-import { ArrowLeft, Globe, Bell, Moon, Volume2 } from "lucide-react";
+import { ArrowLeft, Globe, Bell, Moon, Volume2, Shield, Database, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import LanguageSelector from "@/components/auth/LanguageSelector";
 
 export default function Settings() {
   const [language, setLanguage] = useState("english");
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [sounds, setSounds] = useState(true);
+  const { toast } = useToast();
+  
+  // Effect to apply dark mode class to html element
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', 'true');
+      toast({
+        title: "Dark Mode Enabled",
+        description: "The application is now in dark mode."
+      });
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', 'false');
+    }
+  }, [darkMode, toast]);
+  
+  // Load dark mode setting from localStorage on mount
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true') {
+      setDarkMode(true);
+    }
+  }, []);
   
   return (
     <AppLayout>
@@ -29,27 +55,16 @@ export default function Settings() {
         </header>
         
         <div className="space-y-6">
-          <div className="bg-white rounded-xl p-5 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
             <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
               <Globe size={18} />
               Language
             </h2>
             
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="english">English</SelectItem>
-                <SelectItem value="arabic">العربية (Arabic)</SelectItem>
-                <SelectItem value="turkish">Türkçe (Turkish)</SelectItem>
-                <SelectItem value="spanish">Español (Spanish)</SelectItem>
-                <SelectItem value="french">Français (French)</SelectItem>
-              </SelectContent>
-            </Select>
+            <LanguageSelector />
           </div>
           
-          <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm space-y-4">
             <h2 className="font-semibold text-lg mb-2">App Preferences</h2>
             
             <div className="flex items-center justify-between">
@@ -89,19 +104,32 @@ export default function Settings() {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm space-y-4">
             <h2 className="font-semibold text-lg mb-2">Account</h2>
             
-            <Link to="/account/change-password" className="block p-3 rounded-lg hover:bg-gray-50">
+            <Link to="/account/change-password" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
               Change Password
             </Link>
             
-            <Link to="/account/privacy" className="block p-3 rounded-lg hover:bg-gray-50">
-              Privacy Settings
+            <Link to="/account/privacy" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+              <div className="flex items-center">
+                <Shield className="mr-2" size={18} />
+                <span>Privacy Settings</span>
+              </div>
             </Link>
             
-            <Link to="/account/data" className="block p-3 rounded-lg hover:bg-gray-50">
-              Manage Your Data
+            <Link to="/account/data" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+              <div className="flex items-center">
+                <Database className="mr-2" size={18} />
+                <span>Manage Your Data</span>
+              </div>
+            </Link>
+            
+            <Link to="/payment-methods" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+              <div className="flex items-center">
+                <CreditCard className="mr-2" size={18} />
+                <span>Payment Methods</span>
+              </div>
             </Link>
             
             <Button 
@@ -112,22 +140,22 @@ export default function Settings() {
             </Button>
           </div>
           
-          <div className="bg-white rounded-xl p-5 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
             <h2 className="font-semibold text-lg mb-2">About</h2>
             
-            <Link to="/about" className="block p-3 rounded-lg hover:bg-gray-50">
+            <Link to="/about" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
               About Chef AI
             </Link>
             
-            <Link to="/terms" className="block p-3 rounded-lg hover:bg-gray-50">
+            <Link to="/terms" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
               Terms of Service
             </Link>
             
-            <Link to="/privacy-policy" className="block p-3 rounded-lg hover:bg-gray-50">
+            <Link to="/privacy" className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
               Privacy Policy
             </Link>
             
-            <div className="text-center mt-4 text-gray-500 text-sm">
+            <div className="text-center mt-4 text-gray-500 dark:text-gray-400 text-sm">
               <p>Chef AI v1.0.0</p>
               <p>© 2025 Chef AI Inc.</p>
             </div>

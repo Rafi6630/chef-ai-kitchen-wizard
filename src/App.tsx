@@ -19,6 +19,7 @@ import SavedRecipes from "./pages/SavedRecipes";
 import CookingHistory from "./pages/CookingHistory";
 import Subscription from "./pages/Subscription";
 import Payment from "./pages/Payment";
+import PaymentMethods from "./pages/PaymentMethods";
 import MealPlanning from "./pages/MealPlanning";
 import DietaryPreferences from "./pages/DietaryPreferences";
 import HealthInfo from "./pages/HealthInfo";
@@ -28,6 +29,8 @@ import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import AddRecipe from "./pages/AddRecipe";
 import ShoppingList from "./pages/ShoppingList";
+import AccountPrivacy from "./pages/AccountPrivacy";
+import AccountData from "./pages/AccountData";
 // Admin routes
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -57,6 +60,9 @@ const App = () => (
           <Route path="/cooking-history" element={<CookingHistory />} />
           <Route path="/meal-planning" element={<MealPlanning />} />
           <Route path="/shopping-list" element={<ShoppingList />} />
+          <Route path="/payment-methods" element={<PaymentMethods />} />
+          <Route path="/account/privacy" element={<AccountPrivacy />} />
+          <Route path="/account/data" element={<AccountData />} />
           <Route path="/add-recipe" element={<AddRecipe />} />
           <Route path="/dietary-preferences" element={<DietaryPreferences />} />
           <Route path="/health-info" element={<HealthInfo />} />
