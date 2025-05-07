@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   name: string;
@@ -99,6 +98,7 @@ export interface Recipe {
   };
   isFavorite: boolean;
   isPremiumOnly: boolean;
+  usageCount?: number;
 }
 
 export type FilterType = 'healthy' | 'dietary' | 'cuisine' | 'time' | 'difficulty' | 'tools';
