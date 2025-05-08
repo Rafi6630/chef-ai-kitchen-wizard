@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight } from "lucide-react";
+import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";

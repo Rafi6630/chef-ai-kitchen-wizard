@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppLayout from "@/components/layout/AppLayout";
-import { Search, Filter, ArrowLeft } from "lucide-react";
+import { Search, Filter, ArrowLeft, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { recipes } from "@/data/mockData";
 import { Recipe } from "@/types";

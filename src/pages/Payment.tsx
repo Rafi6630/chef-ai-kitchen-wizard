@@ -5,10 +5,10 @@ import {
   ArrowLeft, 
   CreditCard, 
   Check, 
-  Paypal, 
+  CreditCard as PaypalIcon, 
   Apple, 
   Smartphone,
-  Bank
+  CreditCard as BankIcon
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
@@ -156,7 +156,7 @@ export default function Payment() {
       case "paypal":
         return (
           <div className="py-6 text-center">
-            <Paypal size={48} className="mx-auto mb-4 text-blue-600" />
+            <PaypalIcon size={48} className="mx-auto mb-4 text-blue-600" />
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               You'll be redirected to PayPal to complete your payment.
             </p>
