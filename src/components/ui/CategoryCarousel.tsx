@@ -27,7 +27,7 @@ export default function CategoryCarousel({
     <div className="w-full">
       <Carousel
         className="w-full"
-        onSelect={(index) => setActiveIndex(index)}
+        // Fix: Remove the incorrect onSelect prop that expects a number but receives an event
       >
         <CarouselContent>
           {subcategories.map((subcategory) => (

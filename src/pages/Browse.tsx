@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,8 @@ export default function Browse() {
     
     const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase().includes(selectedCuisine);
     
-    const matchesCategory = selectedCategory ? recipe.mainCategory === selectedCategory : true;
+    // Fix: Use recipe.category instead of non-existent mainCategory
+    const matchesCategory = selectedCategory ? recipe.category === selectedCategory : true;
     
     const matchesSubcategory = selectedSubcategory ? recipe.subcategory === selectedSubcategory : true;
     
