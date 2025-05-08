@@ -7,14 +7,16 @@ interface PremiumFeatureGateProps {
   feature: "nutrition" | "videoGuides" | "mealPlanning" | "aiFeatures" | "shoppingList";
   featureDisplay?: string;
   children: ReactNode;
+  allowOneFreeUse?: boolean;
 }
 
 export default function PremiumFeatureGate({ 
   feature,
   featureDisplay,
-  children 
+  children,
+  allowOneFreeUse = false
 }: PremiumFeatureGateProps) {
-  const { isPremium, premiumFeatures } = usePremium();
+  const { isPremium, premiumFeatures, checkDailyUsage } = usePremium();
   
   const isPremiumFeature = premiumFeatures[feature];
   
@@ -28,11 +30,19 @@ export default function PremiumFeatureGate({
     return <>{children}</>;
   }
   
+  if (allowOneFreeUse && checkDailyUsage(feature)) {
+    // If one free use is allowed and user hasn't used their daily access yet
+    return <>{children}</>;
+  }
+  
   // If it's a premium feature and user is not premium, show overlay
   return (
     <div className="relative">
       {children}
-      <PremiumFeatureOverlay feature={featureDisplay || feature} />
+      <PremiumFeatureOverlay 
+        feature={featureDisplay || feature} 
+        allowOneFreeUse={allowOneFreeUse} 
+      />
     </div>
   );
 }

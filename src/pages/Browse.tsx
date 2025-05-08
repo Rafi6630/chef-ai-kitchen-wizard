@@ -230,7 +230,14 @@ export default function Browse() {
         return (
           <>
             <header className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white dark:bg-gray-900 z-10">
-              <h1 className="text-2xl font-bold mb-3">Browse Recipes</h1>
+              <div className="flex items-center mb-3">
+                <Link to="/" className="mr-3">
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <h1 className="text-2xl font-bold mb-0">Browse Recipes</h1>
+              </div>
               <div className="flex items-center space-x-2">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />

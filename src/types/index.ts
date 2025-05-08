@@ -45,7 +45,20 @@ export interface DietaryPreferences {
   };
 }
 
-export type Category = 'food' | 'desserts' | 'drinks';
+export type Category = "food" | "desserts" | "drinks";
+
+export type FoodSubcategory = "mainDishes" | "appetizers" | "pickles" | "sauces";
+export type DessertSubcategory = "traditional" | "western" | "pastries" | "iceCream";
+export type DrinkSubcategory = "detox" | "cocktails" | "alcoholic" | "hotDrinks";
+export type Subcategory = FoodSubcategory | DessertSubcategory | DrinkSubcategory;
+
+export type DifficultyFilter = "easy" | "medium" | "hard";
+export type DietaryFilter = "vegetarian" | "vegan" | "glutenFree" | "dairyFree" | "keto" | "lowCarb";
+export type CuisineFilter = 
+  | "italian" | "mexican" | "chinese" | "indian" | "japanese" | "thai" 
+  | "turkish" | "syrian" | "iraqi" | "yemeni" | "american" 
+  | "moroccan" | "lebanese" | "german";
+export type MealTypeFilter = "any" | "breakfast" | "lunch" | "dinner" | "dessert" | "snack";
 
 export interface Subcategory {
   id: string;

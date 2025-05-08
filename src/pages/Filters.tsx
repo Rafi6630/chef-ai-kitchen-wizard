@@ -7,47 +7,56 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
-import { filterOptions } from "@/data/mockData";
-import { FilterType, FilterOption } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  CuisineFilter, 
+  DietaryFilter, 
+  DifficultyFilter, 
+  MealTypeFilter
+} from "@/types";
+
+type FiltersState = {
+  cuisine: CuisineFilter | null;
+  dietary: DietaryFilter[];
+  difficulty: DifficultyFilter | null;
+  mealType: MealTypeFilter | null;
+  tools: string[];
+}
 
 export default function Filters() {
-  const [filters, setFilters] = useState<FilterOption[]>(filterOptions);
-  const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FiltersState>({
+    cuisine: null,
+    dietary: [],
+    difficulty: null,
+    mealType: null,
+    tools: []
+  });
+  
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const getFiltersByType = (type: FilterType) => {
-    return filters.filter(filter => filter.type === type);
-  };
-  
-  const toggleFilter = (id: string) => {
-    setFilters(
-      filters.map(filter => 
-        filter.id === id 
-          ? { ...filter, isSelected: !filter.isSelected } 
-          : filter
-      )
-    );
-  };
-  
-  const selectOneFilter = (type: FilterType, id: string) => {
-    setFilters(
-      filters.map(filter => 
-        filter.type === type
-          ? { ...filter, isSelected: filter.id === id }
-          : filter
-      )
-    );
-  };
-  
-  const selectCuisine = (id: string) => {
-    setSelectedCuisine(selectedCuisine === id ? null : id);
+  const toggleDietaryFilter = (filter: DietaryFilter) => {
+    if (filters.dietary.includes(filter)) {
+      setFilters({
+        ...filters,
+        dietary: filters.dietary.filter(f => f !== filter)
+      });
+    } else {
+      setFilters({
+        ...filters,
+        dietary: [...filters.dietary, filter]
+      });
+    }
   };
   
   const resetFilters = () => {
-    setFilters(filters.map(filter => ({ ...filter, isSelected: false })));
-    setSelectedCuisine(null);
+    setFilters({
+      cuisine: null,
+      dietary: [],
+      difficulty: null,
+      mealType: null,
+      tools: []
+    });
     toast({
       title: "Filters Reset",
       description: "All filters have been cleared.",
@@ -55,20 +64,29 @@ export default function Filters() {
   };
   
   const applyFilters = () => {
-    const selectedFilters = filters.filter(filter => filter.isSelected);
+    // Count active filters
+    const activeFilters = 
+      (filters.cuisine ? 1 : 0) + 
+      filters.dietary.length + 
+      (filters.difficulty ? 1 : 0) + 
+      (filters.mealType ? 1 : 0) + 
+      filters.tools.length;
+    
     toast({
       title: "Filters Applied",
-      description: `${selectedFilters.length} filters applied.`,
+      description: `${activeFilters} filters applied.`,
     });
-    navigate('/');
+    navigate('/browse', { 
+      state: { filters } 
+    });
   };
   
   return (
     <AppLayout showNavigation={false}>
-      <header className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+      <header className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-900 z-10">
         <div className="flex items-center">
           <Link to="/" className="mr-4">
-            <ArrowLeft />
+            <ArrowLeft size={20} />
           </Link>
           <h1 className="text-xl font-bold">Filters</h1>
         </div>
@@ -83,96 +101,74 @@ export default function Filters() {
       </header>
       
       <div className="p-6 space-y-8">
-        {/* Cuisine/Country - Moved to the top and redesigned */}
+        {/* Cuisine/Country */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Cuisine / Country</h2>
           <div className="grid grid-cols-2 gap-3">
-            {getFiltersByType("cuisine").map(filter => (
+            {[
+              { id: "italian", name: "Italian" },
+              { id: "mexican", name: "Mexican" },
+              { id: "chinese", name: "Chinese" },
+              { id: "indian", name: "Indian" },
+              { id: "japanese", name: "Japanese" },
+              { id: "thai", name: "Thai" },
+              { id: "turkish", name: "Turkish" },
+              { id: "syrian", name: "Syrian" },
+              { id: "iraqi", name: "Iraqi" },
+              { id: "yemeni", name: "Yemeni" },
+              { id: "american", name: "American" },
+              { id: "moroccan", name: "Moroccan" },
+              { id: "lebanese", name: "Lebanese" },
+              { id: "german", name: "German" }
+            ].map(cuisine => (
               <div 
-                key={filter.id} 
+                key={cuisine.id} 
                 className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  selectedCuisine === filter.id ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                  filters.cuisine === cuisine.id ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
                 }`}
-                onClick={() => selectCuisine(filter.id)}
+                onClick={() => setFilters({
+                  ...filters,
+                  cuisine: filters.cuisine === cuisine.id as CuisineFilter ? null : cuisine.id as CuisineFilter
+                })}
               >
                 <Checkbox 
-                  id={`cuisine-${filter.id}`} 
-                  checked={selectedCuisine === filter.id}
+                  id={`cuisine-${cuisine.id}`} 
+                  checked={filters.cuisine === cuisine.id}
                   className="mr-2"
                 />
-                <Label htmlFor={`cuisine-${filter.id}`} className="cursor-pointer w-full">
-                  {filter.name}
+                <Label htmlFor={`cuisine-${cuisine.id}`} className="cursor-pointer w-full">
+                  {cuisine.name}
                 </Label>
               </div>
             ))}
           </div>
         </div>
         
-        {/* Healthy/Diet-Friendly */}
+        {/* Dietary Preferences */}
         <div>
-          <h2 className="text-lg font-semibold mb-4">Healthy & Diet-Friendly</h2>
+          <h2 className="text-lg font-semibold mb-4">Dietary Preferences</h2>
           <div className="grid grid-cols-2 gap-3">
-            {getFiltersByType("healthy").map(filter => (
+            {[
+              { id: "vegetarian", name: "Vegetarian" },
+              { id: "vegan", name: "Vegan" },
+              { id: "glutenFree", name: "Gluten-Free" },
+              { id: "dairyFree", name: "Dairy-Free" },
+              { id: "keto", name: "Keto" },
+              { id: "lowCarb", name: "Low-Carb" }
+            ].map(diet => (
               <div 
-                key={filter.id} 
+                key={diet.id} 
                 className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                  filters.dietary.includes(diet.id as DietaryFilter) ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
                 }`}
-                onClick={() => toggleFilter(filter.id)}
+                onClick={() => toggleDietaryFilter(diet.id as DietaryFilter)}
               >
                 <Checkbox 
-                  id={filter.id} 
-                  checked={filter.isSelected}
+                  id={diet.id} 
+                  checked={filters.dietary.includes(diet.id as DietaryFilter)}
                   className="mr-2"
                 />
-                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Dietary/Religious Restrictions */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Dietary & Religious Restrictions</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {getFiltersByType("dietary").map(filter => (
-              <div 
-                key={filter.id} 
-                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
-                }`}
-                onClick={() => toggleFilter(filter.id)}
-              >
-                <Checkbox 
-                  id={filter.id} 
-                  checked={filter.isSelected}
-                  className="mr-2"
-                />
-                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Cooking Time */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Cooking Time</h2>
-          <div className="space-y-2">
-            {getFiltersByType("time").map(filter => (
-              <div 
-                key={filter.id} 
-                className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
-                }`}
-                onClick={() => selectOneFilter("time", filter.id)}
-              >
-                <RadioGroupItem 
-                  id={filter.id} 
-                  value={filter.id}
-                  checked={filter.isSelected}
-                  className="mr-2"
-                />
-                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
+                <Label htmlFor={diet.id} className="cursor-pointer w-full">{diet.name}</Label>
               </div>
             ))}
           </div>
@@ -182,44 +178,62 @@ export default function Filters() {
         <div>
           <h2 className="text-lg font-semibold mb-4">Difficulty</h2>
           <div className="space-y-2">
-            {getFiltersByType("difficulty").map(filter => (
+            {[
+              { id: "easy", name: "Easy" },
+              { id: "medium", name: "Medium" },
+              { id: "hard", name: "Hard" }
+            ].map(difficulty => (
               <div 
-                key={filter.id} 
+                key={difficulty.id} 
                 className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                  filters.difficulty === difficulty.id ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
                 }`}
-                onClick={() => selectOneFilter("difficulty", filter.id)}
+                onClick={() => setFilters({
+                  ...filters,
+                  difficulty: filters.difficulty === difficulty.id as DifficultyFilter ? null : difficulty.id as DifficultyFilter
+                })}
               >
                 <RadioGroupItem 
-                  id={filter.id} 
-                  value={filter.id}
-                  checked={filter.isSelected}
+                  id={difficulty.id} 
+                  value={difficulty.id}
+                  checked={filters.difficulty === difficulty.id}
                   className="mr-2"
                 />
-                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
+                <Label htmlFor={difficulty.id} className="cursor-pointer w-full">{difficulty.name}</Label>
               </div>
             ))}
           </div>
         </div>
         
-        {/* Available Tools */}
+        {/* Meal Type */}
         <div>
-          <h2 className="text-lg font-semibold mb-4">Available Tools</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {getFiltersByType("tools").map(filter => (
+          <h2 className="text-lg font-semibold mb-4">Meal Type</h2>
+          <div className="space-y-2">
+            {[
+              { id: "any", name: "Any Meal" },
+              { id: "breakfast", name: "Breakfast" },
+              { id: "lunch", name: "Lunch" },
+              { id: "dinner", name: "Dinner" },
+              { id: "dessert", name: "Dessert" },
+              { id: "snack", name: "Snack" }
+            ].map(mealType => (
               <div 
-                key={filter.id} 
+                key={mealType.id} 
                 className={`p-3 border rounded-lg flex items-center cursor-pointer ${
-                  filter.isSelected ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
+                  filters.mealType === mealType.id ? 'border-chef-primary bg-chef-primary/10' : 'border-gray-200'
                 }`}
-                onClick={() => toggleFilter(filter.id)}
+                onClick={() => setFilters({
+                  ...filters,
+                  mealType: filters.mealType === mealType.id as MealTypeFilter ? null : mealType.id as MealTypeFilter
+                })}
               >
-                <Checkbox 
-                  id={filter.id} 
-                  checked={filter.isSelected}
+                <RadioGroupItem 
+                  id={mealType.id} 
+                  value={mealType.id}
+                  checked={filters.mealType === mealType.id}
                   className="mr-2"
                 />
-                <Label htmlFor={filter.id} className="cursor-pointer w-full">{filter.name}</Label>
+                <Label htmlFor={mealType.id} className="cursor-pointer w-full">{mealType.name}</Label>
               </div>
             ))}
           </div>
