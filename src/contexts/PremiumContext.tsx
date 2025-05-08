@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-type PremiumFeatureKey = "nutrition" | "videoGuides" | "mealPlanning" | "aiFeatures" | "shoppingList";
+type PremiumFeatureKey = "nutrition" | "videoGuides" | "mealPlanning" | "aiFeatures" | "shoppingList" | "instructions";
 
 type DailyFeatureUsage = {
   [K in PremiumFeatureKey]?: {
@@ -98,7 +98,8 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
     videoGuides: true,
     mealPlanning: true,
     aiFeatures: true,
-    shoppingList: true
+    shoppingList: true,
+    instructions: true
   };
 
   const value = {

@@ -1,11 +1,13 @@
+
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
+import MealTypeSelector from "@/components/ui/MealTypeSelector";
 import { subcategories } from "@/data/mockData";
-import { Category } from "@/types";
+import { Category, MealTypeFilter } from "@/types";
 import { Link, useNavigate } from "react-router-dom";
 import { usePremium } from "@/contexts/PremiumContext";
 import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector";
@@ -16,6 +18,7 @@ export default function Index() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   
   const { isPremium } = usePremium();
   const navigate = useNavigate();
@@ -50,6 +53,12 @@ export default function Index() {
     navigate(`/browse?category=${selectedCategory}&subcategory=${selectedSubcategory}&cuisine=${selectedCuisine}`);
   };
   
+  const handleSelectMealType = (mealType: MealTypeFilter) => {
+    setSelectedMealType(mealType);
+    // Navigate to browse with meal type filter
+    navigate(`/browse?mealType=${mealType}`);
+  };
+  
   const renderStepContent = () => {
     switch (step) {
       case "subcategory":
@@ -62,7 +71,7 @@ export default function Index() {
               </p>
             </div>
             
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-6">
               {filteredSubcategories.map((subcategory) => (
                 <div 
                   key={subcategory.id} 
@@ -155,7 +164,7 @@ export default function Index() {
               </p>
             </div>
 
-            {/* Will still use the tabs from the category selection since we have detailed steps now */}
+            {/* Category selection tabs */}
             <Tabs 
               defaultValue="food" 
               value={selectedCategory}
@@ -194,20 +203,18 @@ export default function Index() {
         </div>
         
         {/* Category tabs */}
-        {step === "category" && (
-          <Tabs 
-            defaultValue="food" 
-            value={selectedCategory}
-            onValueChange={(value) => setSelectedCategory(value as Category)}
-            className="w-full"
-          >
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="food" className="font-medium">Food</TabsTrigger>
-              <TabsTrigger value="desserts" className="font-medium">Desserts</TabsTrigger>
-              <TabsTrigger value="drinks" className="font-medium">Drinks</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
+        <Tabs 
+          defaultValue="food" 
+          value={selectedCategory}
+          onValueChange={(value) => setSelectedCategory(value as Category)}
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="food" className="font-medium">Food</TabsTrigger>
+            <TabsTrigger value="desserts" className="font-medium">Desserts</TabsTrigger>
+            <TabsTrigger value="drinks" className="font-medium">Drinks</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </header>
       
       <main className="px-6">
@@ -215,6 +222,17 @@ export default function Index() {
         
         {step === "subcategory" && (
           <>
+            {/* Meal Type Selector */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-semibold dark:text-white">Meal Type</h2>
+              </div>
+              <MealTypeSelector
+                onSelectMealType={handleSelectMealType}
+                selectedMealType={selectedMealType}
+              />
+            </div>
+            
             {/* Quick Filter Section */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">

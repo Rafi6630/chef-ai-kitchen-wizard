@@ -1,4 +1,3 @@
-
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/layout/AppLayout";
@@ -265,20 +264,22 @@ export default function RecipeDetail() {
               </ul>
             </div>
             
-            {/* Instructions */}
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Instructions</h2>
-              <ol className="space-y-4">
-                {recipe.instructions.map((instruction, index) => (
-                  <li key={index} className="flex">
-                    <span className="w-6 h-6 bg-chef-primary text-white rounded-full flex items-center justify-center text-xs mr-3 mt-0.5">
-                      {index + 1}
-                    </span>
-                    <span>{instruction}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
+            {/* Instructions (Now a Premium Feature) */}
+            <PremiumFeatureGate feature="nutrition" featureDisplay="Detailed Instructions">
+              <div className="mt-8">
+                <h2 className="text-xl font-semibold mb-4">Instructions</h2>
+                <ol className="space-y-4">
+                  {recipe.instructions.map((instruction, index) => (
+                    <li key={index} className="flex">
+                      <span className="w-6 h-6 bg-chef-primary text-white rounded-full flex items-center justify-center text-xs mr-3 mt-0.5">
+                        {index + 1}
+                      </span>
+                      <span>{instruction}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </PremiumFeatureGate>
             
             {/* Nutrition */}
             <PremiumFeatureGate feature="nutrition" featureDisplay="Detailed Nutrition Information">

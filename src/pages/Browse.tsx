@@ -1,40 +1,51 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppLayout from "@/components/layout/AppLayout";
-import { Search, Filter, ArrowLeft, X } from "lucide-react";
+import { Search, Filter, ArrowLeft, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-import { recipes } from "@/data/mockData";
-import { Recipe } from "@/types";
+import { recipes, subcategories } from "@/data/mockData";
+import { Recipe, Category, SubcategoryInfo } from "@/types";
 import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector";
-
-type MealType = 'all' | 'breakfast' | 'lunch' | 'dinner';
-type CuisineType = 'all' | 'italian' | 'mexican' | 'asian' | 'american' | 'indian' | 'mediterranean';
+import CategoryCarousel from "@/components/ui/CategoryCarousel";
+import MealTypeSelector from "@/components/ui/MealTypeSelector";
+import { MealTypeFilter } from "@/types";
 
 export default function Browse() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMealType, setSelectedMealType] = useState<MealType>('all');
-  const [selectedCuisine, setSelectedCuisine] = useState<CuisineType>('all');
+  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
+  const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
   const [showIngredientSelector, setShowIngredientSelector] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [step, setStep] = useState<"browse" | "category" | "cuisine" | "ingredients">("browse");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("food");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   
   const handleAddIngredients = (ingredients: string[]) => {
     setSelectedIngredients(ingredients);
     setShowIngredientSelector(false);
   };
 
-  // Filter recipes based on search term, meal type, cuisine, and ingredients
+  const filteredSubcategories = subcategories.filter(
+    (subcategory) => subcategory.category === selectedCategory
+  );
+
+  // Filter recipes based on search term, meal type, cuisine, ingredients, and categories
   const filteredRecipes = recipes.filter(recipe => {
     const matchesSearch = 
       recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recipe.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesMealType = selectedMealType === 'all' || recipe.category.toLowerCase() === selectedMealType;
+    const matchesMealType = selectedMealType === 'any' || recipe.category.toLowerCase() === selectedMealType;
     
     const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase().includes(selectedCuisine);
+    
+    const matchesCategory = selectedCategory ? recipe.mainCategory === selectedCategory : true;
+    
+    const matchesSubcategory = selectedSubcategory ? recipe.subcategory === selectedSubcategory : true;
     
     // If there are selected ingredients, check if recipe ingredients include them
     const matchesIngredients = selectedIngredients.length === 0 || 
@@ -44,8 +55,12 @@ export default function Browse() {
         )
       );
     
-    return matchesSearch && matchesMealType && matchesCuisine && matchesIngredients;
+    return matchesSearch && matchesMealType && matchesCuisine && matchesIngredients && matchesCategory && matchesSubcategory;
   });
+
+  const handleSelectSubcategory = (subcategory: SubcategoryInfo) => {
+    setSelectedSubcategory(selectedSubcategory === subcategory.id ? null : subcategory.id);
+  };
   
   const renderStepContent = () => {
     switch(step) {
@@ -64,10 +79,10 @@ export default function Browse() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               <Button 
-                variant={selectedMealType === 'all' ? 'default' : 'outline'}
+                variant={selectedMealType === 'any' ? 'default' : 'outline'}
                 className="justify-start h-16 text-lg"
                 onClick={() => {
-                  setSelectedMealType('all');
+                  setSelectedMealType('any');
                   setStep("cuisine");
                 }}
               >
@@ -102,6 +117,26 @@ export default function Browse() {
                 }}
               >
                 Dinner
+              </Button>
+              <Button 
+                variant={selectedMealType === 'dessert' ? 'default' : 'outline'}
+                className="justify-start h-16 text-lg"
+                onClick={() => {
+                  setSelectedMealType('dessert');
+                  setStep("cuisine");
+                }}
+              >
+                Dessert
+              </Button>
+              <Button 
+                variant={selectedMealType === 'snack' ? 'default' : 'outline'}
+                className="justify-start h-16 text-lg"
+                onClick={() => {
+                  setSelectedMealType('snack');
+                  setStep("cuisine");
+                }}
+              >
+                Snack
               </Button>
             </div>
           </div>
@@ -236,7 +271,9 @@ export default function Browse() {
                     <ArrowLeft size={20} />
                   </Button>
                 </Link>
-                <h1 className="text-2xl font-bold mb-0">Browse Recipes</h1>
+                <h1 className="text-2xl font-bold mb-0 flex items-center">
+                  <Globe className="mr-2" /> Global Cuisine
+                </h1>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="relative flex-1">
@@ -257,14 +294,63 @@ export default function Browse() {
                 </Button>
               </div>
               
-              {(selectedMealType !== 'all' || selectedCuisine !== 'all' || selectedIngredients.length > 0) && (
+              {/* Category filters */}
+              <div className="mt-4">
+                <Tabs 
+                  value={selectedCategory}
+                  onValueChange={(value) => setSelectedCategory(value as Category)}
+                  className="w-full"
+                >
+                  <TabsList className="grid grid-cols-3 mb-4">
+                    <TabsTrigger value="food" className="font-medium">Food</TabsTrigger>
+                    <TabsTrigger value="desserts" className="font-medium">Desserts</TabsTrigger>
+                    <TabsTrigger value="drinks" className="font-medium">Drinks</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                
+                {/* Subcategory carousel */}
+                <div className="mb-4">
+                  <CategoryCarousel 
+                    subcategories={filteredSubcategories}
+                    onSelectSubcategory={handleSelectSubcategory}
+                    selectedSubcategoryId={selectedSubcategory || undefined}
+                  />
+                </div>
+                
+                {/* Meal Type selector */}
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium mb-2">Meal Type</h3>
+                  <MealTypeSelector 
+                    onSelectMealType={setSelectedMealType}
+                    selectedMealType={selectedMealType}
+                  />
+                </div>
+              </div>
+              
+              {/* Applied filters */}
+              {(selectedMealType !== 'any' || selectedCuisine !== 'all' || 
+                selectedIngredients.length > 0 || selectedSubcategory) && (
                 <div className="mt-4">
                   <div className="flex flex-wrap gap-2">
-                    {selectedMealType !== 'all' && (
+                    {selectedMealType !== 'any' && (
                       <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
                         <span>Meal: {selectedMealType}</span>
                         <button 
-                          onClick={() => setSelectedMealType('all')}
+                          onClick={() => setSelectedMealType('any')}
+                          className="ml-2 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
+                    
+                    {selectedSubcategory && (
+                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
+                        <span>
+                          Subcategory: {subcategories.find(s => s.id === selectedSubcategory)?.name || selectedSubcategory}
+                        </span>
+                        <button 
+                          onClick={() => setSelectedSubcategory(null)}
                           className="ml-2 hover:text-red-500"
                         >
                           <X size={14} />
@@ -296,20 +382,19 @@ export default function Browse() {
                       </div>
                     ))}
                     
-                    {(selectedMealType !== 'all' || selectedCuisine !== 'all' || selectedIngredients.length > 0) && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        className="text-red-500 hover:text-red-600"
-                        onClick={() => {
-                          setSelectedMealType('all');
-                          setSelectedCuisine('all');
-                          setSelectedIngredients([]);
-                        }}
-                      >
-                        Clear All
-                      </Button>
-                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-red-500 hover:text-red-600"
+                      onClick={() => {
+                        setSelectedMealType('any');
+                        setSelectedCuisine('all');
+                        setSelectedIngredients([]);
+                        setSelectedSubcategory(null);
+                      }}
+                    >
+                      Clear All
+                    </Button>
                   </div>
                 </div>
               )}
