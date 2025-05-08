@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -185,6 +184,7 @@ export default function AIAssistant() {
     return (
       <AppLayout>
         <PremiumFeatureOverlay 
+          feature="AI Assistant"
           title="AI Assistant" 
           description="Get personalized recipe recommendations from our AI chef. Upload photos of ingredients, use voice commands, and more!"
           featureList={[
@@ -196,6 +196,7 @@ export default function AIAssistant() {
           ]}
           buttonText="Upgrade to Premium"
           buttonLink="/subscription"
+          allowOneFreeUse={true}
         />
       </AppLayout>
     );
