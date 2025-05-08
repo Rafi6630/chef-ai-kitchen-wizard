@@ -177,7 +177,14 @@ export default function Filters() {
         {/* Difficulty */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Difficulty</h2>
-          <div className="space-y-2">
+          <RadioGroup
+            value={filters.difficulty || ""}
+            onValueChange={(value) => setFilters({
+              ...filters,
+              difficulty: value as DifficultyFilter || null
+            })}
+            className="space-y-2"
+          >
             {[
               { id: "easy", name: "Easy" },
               { id: "medium", name: "Medium" },
@@ -196,19 +203,25 @@ export default function Filters() {
                 <RadioGroupItem 
                   id={difficulty.id} 
                   value={difficulty.id}
-                  checked={filters.difficulty === difficulty.id}
                   className="mr-2"
                 />
                 <Label htmlFor={difficulty.id} className="cursor-pointer w-full">{difficulty.name}</Label>
               </div>
             ))}
-          </div>
+          </RadioGroup>
         </div>
         
         {/* Meal Type */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Meal Type</h2>
-          <div className="space-y-2">
+          <RadioGroup
+            value={filters.mealType || ""}
+            onValueChange={(value) => setFilters({
+              ...filters,
+              mealType: value as MealTypeFilter || null
+            })}
+            className="space-y-2"
+          >
             {[
               { id: "any", name: "Any Meal" },
               { id: "breakfast", name: "Breakfast" },
@@ -230,13 +243,12 @@ export default function Filters() {
                 <RadioGroupItem 
                   id={mealType.id} 
                   value={mealType.id}
-                  checked={filters.mealType === mealType.id}
                   className="mr-2"
                 />
                 <Label htmlFor={mealType.id} className="cursor-pointer w-full">{mealType.name}</Label>
               </div>
             ))}
-          </div>
+          </RadioGroup>
         </div>
         
         <Button onClick={applyFilters} className="btn-primary w-full my-6">
