@@ -2,10 +2,9 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft } from "lucide-react";
+import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft, Plus } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
-import MealTypeSelector from "@/components/ui/MealTypeSelector";
 import { subcategories } from "@/data/mockData";
 import { Category, MealTypeFilter } from "@/types";
 import { Link, useNavigate } from "react-router-dom";
@@ -18,7 +17,6 @@ export default function Index() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   
   const { isPremium } = usePremium();
   const navigate = useNavigate();
@@ -51,12 +49,6 @@ export default function Index() {
   const skipIngredients = () => {
     // Navigate to browse page with filters but without ingredients
     navigate(`/browse?category=${selectedCategory}&subcategory=${selectedSubcategory}&cuisine=${selectedCuisine}`);
-  };
-  
-  const handleSelectMealType = (mealType: MealTypeFilter) => {
-    setSelectedMealType(mealType);
-    // Navigate to browse with meal type filter
-    navigate(`/browse?mealType=${mealType}`);
   };
   
   const renderStepContent = () => {
@@ -222,15 +214,43 @@ export default function Index() {
         
         {step === "subcategory" && (
           <>
-            {/* Meal Type Selector */}
+            {/* Add Ingredients Section - Replacing Meal Type */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-semibold dark:text-white">Meal Type</h2>
+                <h2 className="text-lg font-semibold dark:text-white">Add Ingredients</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-chef-primary"
+                  onClick={() => setStep("ingredients")}
+                >
+                  See All
+                </Button>
               </div>
-              <MealTypeSelector
-                onSelectMealType={handleSelectMealType}
-                selectedMealType={selectedMealType}
-              />
+              
+              <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-3">
+                  {["Chicken", "Rice", "Garlic", "Potato", "Tomato", "Beef", "Onion", "Carrots"].map(ingredient => (
+                    <Button
+                      key={ingredient}
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 rounded-full"
+                      onClick={() => setSelectedIngredients(prev => [...prev, ingredient])}
+                    >
+                      {ingredient}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={() => setStep("ingredients")}
+                >
+                  <Plus size={16} />
+                  <span>Add Your Ingredients</span>
+                </Button>
+              </div>
             </div>
             
             {/* Quick Filter Section */}
@@ -306,9 +326,9 @@ export default function Index() {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Tell our AI what ingredients you have and get recipe recommendations
               </p>
-              <Link to={`/chatbot?category=${selectedCategory}`}>
+              <Link to="/ai-assistant">
                 <Button className="btn-primary">
-                  Use AI Chatbot {!isPremium && "(Basic)"}
+                  Use AI Assistant {!isPremium && "(Premium)"}
                 </Button>
               </Link>
               {!isPremium && (

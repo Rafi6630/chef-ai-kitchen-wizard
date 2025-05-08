@@ -8,7 +8,7 @@ import { PremiumProvider } from "@/contexts/PremiumContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Chatbot from "./pages/Chatbot";
+import AIAssistant from "./pages/AIAssistant";
 import Filters from "./pages/Filters";
 import Browse from "./pages/Browse";
 import RecipeDetail from "./pages/RecipeDetail";
@@ -53,7 +53,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/ai-assistant" element={<AIAssistant />} />
             <Route path="/filters" element={<Filters />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/recipe/:id" element={<RecipeDetail />} />

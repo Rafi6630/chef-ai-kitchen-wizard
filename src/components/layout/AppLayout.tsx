@@ -15,7 +15,7 @@ export default function AppLayout({
 }: AppLayoutProps) {
   return (
     <div className="app-container">
-      <div className={`pb-20 ${className}`}>
+      <div className={`pb-20 ${className} max-w-full overflow-x-hidden`}>
         {children}
       </div>
       {showNavigation && <BottomNavigation />}
