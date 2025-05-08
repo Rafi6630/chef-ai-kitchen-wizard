@@ -62,6 +62,8 @@ export interface SubcategoryInfo {
   name: string;
   imageUrl: string;
   category: Category;
+  premium?: boolean;
+  difficulty?: "easy" | "medium" | "hard";
 }
 
 export type DifficultyFilter = "easy" | "medium" | "hard";
