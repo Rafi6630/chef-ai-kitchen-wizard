@@ -1,9 +1,9 @@
 
 import { Link } from "react-router-dom";
-import { Subcategory } from "@/types";
+import { SubcategoryInfo } from "@/types";
 
 interface CategoryCardProps {
-  subcategory: Subcategory;
+  subcategory: SubcategoryInfo;
 }
 
 export default function CategoryCard({ subcategory }: CategoryCardProps) {

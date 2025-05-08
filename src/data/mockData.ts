@@ -1,7 +1,7 @@
 
-import { Subcategory, Recipe, FilterOption } from "@/types";
+import { SubcategoryInfo, Recipe, FilterOption } from "@/types";
 
-export const subcategories: Subcategory[] = [
+export const subcategories: SubcategoryInfo[] = [
   {
     id: "main-dishes",
     name: "Main Dishes",

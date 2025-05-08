@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   name: string;
@@ -47,10 +48,21 @@ export interface DietaryPreferences {
 
 export type Category = "food" | "desserts" | "drinks";
 
+// These are the specific subcategory types
 export type FoodSubcategory = "mainDishes" | "appetizers" | "pickles" | "sauces";
 export type DessertSubcategory = "traditional" | "western" | "pastries" | "iceCream";
 export type DrinkSubcategory = "detox" | "cocktails" | "alcoholic" | "hotDrinks";
-export type Subcategory = FoodSubcategory | DessertSubcategory | DrinkSubcategory;
+
+// This is the union of all possible subcategory string literals
+export type SubcategoryType = FoodSubcategory | DessertSubcategory | DrinkSubcategory;
+
+// This is the interface for subcategory objects with properties
+export interface SubcategoryInfo {
+  id: string;
+  name: string;
+  imageUrl: string;
+  category: Category;
+}
 
 export type DifficultyFilter = "easy" | "medium" | "hard";
 export type DietaryFilter = "vegetarian" | "vegan" | "glutenFree" | "dairyFree" | "keto" | "lowCarb";
@@ -59,13 +71,6 @@ export type CuisineFilter =
   | "turkish" | "syrian" | "iraqi" | "yemeni" | "american" 
   | "moroccan" | "lebanese" | "german";
 export type MealTypeFilter = "any" | "breakfast" | "lunch" | "dinner" | "dessert" | "snack";
-
-export interface Subcategory {
-  id: string;
-  name: string;
-  imageUrl: string;
-  category: Category;
-}
 
 export interface Recipe {
   id: string;
