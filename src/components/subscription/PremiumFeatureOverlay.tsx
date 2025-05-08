@@ -1,15 +1,28 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 import { usePremium } from "@/contexts/PremiumContext";
 
 interface PremiumFeatureOverlayProps {
-  feature: string;
+  feature?: string; // Make optional
   allowOneFreeUse?: boolean;
+  // Add new optional props
+  title?: string;
+  description?: string;
+  featureList?: string[];
+  buttonText?: string;
+  buttonLink?: string;
 }
 
-export default function PremiumFeatureOverlay({ feature, allowOneFreeUse = false }: PremiumFeatureOverlayProps) {
+export default function PremiumFeatureOverlay({ 
+  feature = "this feature",
+  allowOneFreeUse = false,
+  title = "Premium Feature",
+  description,
+  featureList,
+  buttonText = "Upgrade to Premium",
+  buttonLink = "/subscription"
+}: PremiumFeatureOverlayProps) {
   const { recordFeatureUsage } = usePremium();
   
   const handleUseFreeAccess = () => {
@@ -21,14 +34,26 @@ export default function PremiumFeatureOverlay({ feature, allowOneFreeUse = false
       <div className="bg-chef-primary/10 dark:bg-chef-primary/20 p-4 rounded-full mb-4">
         <Lock size={32} className="text-chef-primary" />
       </div>
-      <h3 className="text-xl font-semibold mb-2 dark:text-white">Premium Feature</h3>
+      <h3 className="text-xl font-semibold mb-2 dark:text-white">{title}</h3>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
-        {feature.charAt(0).toUpperCase() + feature.slice(1)} is available with our premium subscription.
+        {description || `${feature.charAt(0).toUpperCase() + feature.slice(1)} is available with our premium subscription.`}
       </p>
+      
+      {featureList && (
+        <ul className="text-left mb-6 space-y-2">
+          {featureList.map((item, index) => (
+            <li key={index} className="flex items-center">
+              <span className="text-chef-primary mr-2">✓</span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+      
       <div className="flex flex-col gap-3 w-full max-w-xs">
-        <Link to="/subscription">
+        <Link to={buttonLink}>
           <Button className="w-full bg-chef-primary hover:bg-chef-primary/90">
-            Upgrade to Premium
+            {buttonText}
           </Button>
         </Link>
         
