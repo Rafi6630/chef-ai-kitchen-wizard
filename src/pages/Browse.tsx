@@ -8,7 +8,6 @@ import { Search, Filter, ArrowLeft, X, Globe } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { recipes, subcategories } from "@/data/mockData";
 import { Recipe, Category, SubcategoryInfo } from "@/types";
-import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector";
 import CategoryCarousel from "@/components/ui/CategoryCarousel";
 import MealTypeSelector from "@/components/ui/MealTypeSelector";
 import { MealTypeFilter } from "@/types";
@@ -23,9 +22,8 @@ export default function Browse() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
-  const [showIngredientSelector, setShowIngredientSelector] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [step, setStep] = useState<"browse" | "category" | "cuisine" | "ingredients">("browse");
+  const [step, setStep] = useState<"browse" | "category" | "cuisine">("browse");
   const [selectedCategory, setSelectedCategory] = useState<Category>(urlCategory as Category || "food");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(urlSubcategory || null);
   
@@ -47,11 +45,6 @@ export default function Browse() {
       setSelectedIngredients(urlIngredients.split(','));
     }
   }, [urlCategory, urlSubcategory, urlCuisine, urlIngredients]);
-  
-  const handleAddIngredients = (ingredients: string[]) => {
-    setSelectedIngredients(ingredients);
-    setShowIngredientSelector(false);
-  };
 
   const filteredSubcategories = subcategories.filter(
     (subcategory) => subcategory.category === selectedCategory
@@ -187,7 +180,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('all');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 All Cuisines
@@ -197,7 +190,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('italian');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 Italian
@@ -207,7 +200,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('mexican');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 Mexican
@@ -217,7 +210,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('asian');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 Asian
@@ -227,7 +220,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('american');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 American
@@ -237,7 +230,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('indian');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 Indian
@@ -247,7 +240,7 @@ export default function Browse() {
                 className="justify-start h-12"
                 onClick={() => {
                   setSelectedCuisine('mediterranean');
-                  setStep("ingredients");
+                  setStep("browse");
                 }}
               >
                 Mediterranean
@@ -255,42 +248,11 @@ export default function Browse() {
             </div>
           </div>
         );
-        
-      case "ingredients":
-        return (
-          <div className="p-6">
-            <div className="flex items-center mb-4">
-              <Button
-                variant="ghost" 
-                onClick={() => setStep("cuisine")}
-                className="mr-2"
-              >
-                <ArrowLeft size={18} />
-              </Button>
-              <h2 className="text-xl font-bold">Select Ingredients</h2>
-            </div>
-            <QuickIngredientSelector onAddIngredients={(ingredients) => {
-              handleAddIngredients(ingredients);
-              setStep("browse");
-            }} />
-            <div className="mt-4 text-center">
-              <Button 
-                variant="outline"
-                onClick={() => {
-                  setSelectedIngredients([]);
-                  setStep("browse");
-                }}
-              >
-                Skip this step
-              </Button>
-            </div>
-          </div>
-        );
-        
+                
       default: // browse
         return (
           <>
-            <header className="px-6 py-4 border-b border-gray-200 sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <header className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
               <div className="flex items-center mb-3">
                 <Link to="/" className="mr-3">
                   <Button variant="ghost" size="icon" className="rounded-full">

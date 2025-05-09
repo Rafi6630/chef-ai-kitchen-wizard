@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector
 
 export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("food");
-  const [step, setStep] = useState<"category" | "subcategory" | "cuisine" | "filters" | "ingredients">("category");
+  const [step, setStep] = useState<"category" | "subcategory" | "cuisine" | "filters" | "ingredients" | "confirm" | "results">("category");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
@@ -39,13 +40,8 @@ export default function Index() {
 
   const handleAddIngredients = (ingredients: string[]) => {
     setSelectedIngredients(ingredients);
-    // Navigate to home page after adding ingredients
-    setStep("subcategory");
-  };
-
-  const skipIngredients = () => {
-    // Navigate back to home page without ingredients
-    setStep("subcategory");
+    // Move to the confirm ingredients step according to new workflow
+    setStep("confirm");
   };
   
   const findRecipes = () => {
@@ -72,7 +68,9 @@ export default function Index() {
                   className="cursor-pointer"
                   onClick={() => handleSelectSubcategory(subcategory.id)}
                 >
-                  <CategoryCard subcategory={subcategory} />
+                  <CategoryCard 
+                    subcategory={subcategory}
+                  />
                 </div>
               ))}
             </div>
@@ -136,13 +134,66 @@ export default function Index() {
             </div>
             
             <QuickIngredientSelector onAddIngredients={handleAddIngredients} />
-            
-            <div className="mt-4 text-center">
+          </>
+        );
+
+      case "confirm":
+        return (
+          <>
+            <div className="mb-4">
+              <div className="flex items-center mb-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="mr-2"
+                  onClick={() => setStep("ingredients")}
+                >
+                  <ArrowLeft size={16} />
+                </Button>
+                <h2 className="text-xl font-semibold">Confirm Ingredients</h2>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Review your selected ingredients
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              {selectedIngredients.length > 0 ? (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedIngredients.map((ingredient, index) => (
+                    <div key={index} className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center">
+                      <span>{ingredient}</span>
+                      <button 
+                        onClick={() => setSelectedIngredients(prev => prev.filter((_, i) => i !== index))}
+                        className="ml-2 hover:text-red-500"
+                      >
+                        <ArrowRight size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                  No ingredients selected. Go back to add ingredients.
+                </p>
+              )}
+              
               <Button 
+                className="w-full mt-4"
+                onClick={() => setStep("ingredients")}
                 variant="outline"
-                onClick={skipIngredients}
               >
-                Skip this step
+                <Plus size={16} className="mr-2" />
+                Add More Ingredients
+              </Button>
+
+              <Button 
+                className="w-full mt-4 bg-chef-primary hover:bg-chef-primary/90 text-white"
+                onClick={findRecipes}
+                disabled={selectedIngredients.length === 0}
+              >
+                <Search size={16} className="mr-2" />
+                Find Recipes
               </Button>
             </div>
           </>
@@ -259,8 +310,13 @@ export default function Index() {
             <div className="mb-6">
               <Button 
                 className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-3 rounded-xl shadow-md flex justify-center items-center gap-2"
-                onClick={findRecipes}
-                disabled={!selectedSubcategory && selectedIngredients.length === 0}
+                onClick={() => {
+                  if (selectedIngredients.length > 0) {
+                    findRecipes();
+                  } else {
+                    setStep("ingredients");
+                  }
+                }}
               >
                 <Search size={18} />
                 <span className="font-medium">Find Recipes</span>
@@ -313,24 +369,6 @@ export default function Index() {
               <Link to="/add-recipe">
                 <Button className="w-full bg-chef-secondary hover:bg-chef-secondary/90 text-white">
                   Create and Share Recipe
-                </Button>
-              </Link>
-            </div>
-
-            {/* Cook With What You Have */}
-            <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 dark:from-chef-primary/30 dark:to-chef-secondary/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-chef-primary text-white p-2 rounded-full">
-                  <Utensils size={20} />
-                </div>
-                <h2 className="text-lg font-semibold dark:text-white">Cook With What You Have</h2>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-                Select ingredients from your pantry and find recipes you can make right now.
-              </p>
-              <Link to="/pantry">
-                <Button className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white">
-                  Find Recipes With Your Ingredients
                 </Button>
               </Link>
             </div>

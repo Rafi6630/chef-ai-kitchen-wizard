@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PremiumProvider } from "@/contexts/PremiumContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -37,8 +37,21 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminRecipes from "./pages/AdminRecipes";
 import AdminUsers from "./pages/AdminUsers";
 import AdminSettings from "./pages/AdminSettings";
+import AdminIngredients from "./pages/AdminIngredients";
+import AdminSubscriptions from "./pages/AdminSubscriptions";
 
 const queryClient = new QueryClient();
+
+// Admin auth check component
+const AdminRoute = ({ children }: { children: JSX.Element }) => {
+  const isAuthenticated = localStorage.getItem("adminAuthenticated") === "true";
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" />;
+  }
+  
+  return children;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -76,12 +89,43 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             
             {/* Admin routes */}
-            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/recipes" element={<AdminRecipes />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/dashboard" element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } />
+            <Route path="/admin/recipes" element={
+              <AdminRoute>
+                <AdminRecipes />
+              </AdminRoute>
+            } />
+            <Route path="/admin/users" element={
+              <AdminRoute>
+                <AdminUsers />
+              </AdminRoute>
+            } />
+            <Route path="/admin/ingredients" element={
+              <AdminRoute>
+                <AdminIngredients />
+              </AdminRoute>
+            } />
+            <Route path="/admin/subscriptions" element={
+              <AdminRoute>
+                <AdminSubscriptions />
+              </AdminRoute>
+            } />
+            <Route path="/admin/analytics" element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <AdminRoute>
+                <AdminSettings />
+              </AdminRoute>
+            } />
             
             {/* 404 route */}
             <Route path="*" element={<NotFound />} />
