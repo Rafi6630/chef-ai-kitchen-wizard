@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppLayout from "@/components/layout/AppLayout";
 import { Search, Filter, ArrowLeft, X, Globe } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { recipes, subcategories } from "@/data/mockData";
 import { Recipe, Category, SubcategoryInfo } from "@/types";
 import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector";
@@ -13,14 +14,39 @@ import MealTypeSelector from "@/components/ui/MealTypeSelector";
 import { MealTypeFilter } from "@/types";
 
 export default function Browse() {
+  const [searchParams] = useSearchParams();
+  const urlCategory = searchParams.get("category");
+  const urlSubcategory = searchParams.get("subcategory");
+  const urlCuisine = searchParams.get("cuisine");
+  const urlIngredients = searchParams.get("ingredients");
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
   const [showIngredientSelector, setShowIngredientSelector] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [step, setStep] = useState<"browse" | "category" | "cuisine" | "ingredients">("browse");
-  const [selectedCategory, setSelectedCategory] = useState<Category>("food");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category>(urlCategory as Category || "food");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(urlSubcategory || null);
+  
+  // Set initial state from URL parameters
+  useEffect(() => {
+    if (urlCategory) {
+      setSelectedCategory(urlCategory as Category);
+    }
+    
+    if (urlSubcategory) {
+      setSelectedSubcategory(urlSubcategory);
+    }
+    
+    if (urlCuisine) {
+      setSelectedCuisine(urlCuisine.toLowerCase());
+    }
+    
+    if (urlIngredients) {
+      setSelectedIngredients(urlIngredients.split(','));
+    }
+  }, [urlCategory, urlSubcategory, urlCuisine, urlIngredients]);
   
   const handleAddIngredients = (ingredients: string[]) => {
     setSelectedIngredients(ingredients);
@@ -34,15 +60,15 @@ export default function Browse() {
   // Filter recipes based on search term, meal type, cuisine, ingredients, and categories
   const filteredRecipes = recipes.filter(recipe => {
     const matchesSearch = 
+      searchTerm === "" || 
       recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recipe.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesMealType = selectedMealType === 'any' || recipe.category.toLowerCase() === selectedMealType;
     
-    const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase().includes(selectedCuisine);
+    const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase() === selectedCuisine;
     
-    // Fix: Use recipe.category instead of non-existent mainCategory
     const matchesCategory = selectedCategory ? recipe.category === selectedCategory : true;
     
     const matchesSubcategory = selectedSubcategory ? recipe.subcategory === selectedSubcategory : true;
@@ -66,7 +92,7 @@ export default function Browse() {
     switch(step) {
       case "category":
         return (
-          <div>
+          <div className="p-6">
             <div className="flex items-center mb-4">
               <Button
                 variant="ghost" 
@@ -144,7 +170,7 @@ export default function Browse() {
         
       case "cuisine":
         return (
-          <div>
+          <div className="p-6">
             <div className="flex items-center mb-4">
               <Button
                 variant="ghost" 
@@ -232,7 +258,7 @@ export default function Browse() {
         
       case "ingredients":
         return (
-          <div>
+          <div className="p-6">
             <div className="flex items-center mb-4">
               <Button
                 variant="ghost" 
@@ -255,7 +281,7 @@ export default function Browse() {
                   setStep("browse");
                 }}
               >
-                Skip this step (show all recipes)
+                Skip this step
               </Button>
             </div>
           </div>
@@ -428,7 +454,7 @@ export default function Browse() {
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link to={`/recipe/${recipe.id}`} className="block">
-      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 transform transition-transform hover:scale-[1.02]">
         <div className="relative aspect-video">
           <img 
             src={recipe.imageUrl} 

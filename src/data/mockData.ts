@@ -27,6 +27,12 @@ export const subcategories: SubcategoryInfo[] = [
     category: "food"
   },
   {
+    id: "other-food",
+    name: "Other",
+    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1470&auto=format&fit=crop",
+    category: "food"
+  },
+  {
     id: "traditional",
     name: "Traditional",
     imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b19f?q=80&w=1436&auto=format&fit=crop",
@@ -51,6 +57,12 @@ export const subcategories: SubcategoryInfo[] = [
     category: "desserts"
   },
   {
+    id: "other-desserts",
+    name: "Other",
+    imageUrl: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=1374&auto=format&fit=crop",
+    category: "desserts"
+  },
+  {
     id: "detox",
     name: "Detox",
     imageUrl: "https://images.unsplash.com/photo-1622597467836-f3e6407416e5?q=80&w=1374&auto=format&fit=crop",
@@ -63,9 +75,21 @@ export const subcategories: SubcategoryInfo[] = [
     category: "drinks"
   },
   {
+    id: "hot-drinks",
+    name: "Hot Drinks",
+    imageUrl: "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?q=80&w=1374&auto=format&fit=crop",
+    category: "drinks"
+  },
+  {
     id: "alcoholic",
     name: "Alcoholic Drinks",
     imageUrl: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?q=80&w=1469&auto=format&fit=crop",
+    category: "drinks"
+  },
+  {
+    id: "other-drinks",
+    name: "Other",
+    imageUrl: "https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?q=80&w=1470&auto=format&fit=crop",
     category: "drinks"
   }
 ];

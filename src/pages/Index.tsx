@@ -8,7 +8,6 @@ import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";
 import { Category, MealTypeFilter } from "@/types";
 import { Link, useNavigate } from "react-router-dom";
-import { usePremium } from "@/contexts/PremiumContext";
 import QuickIngredientSelector from "@/components/recipe/QuickIngredientSelector";
 
 export default function Index() {
@@ -18,7 +17,6 @@ export default function Index() {
   const [selectedCuisine, setSelectedCuisine] = useState<string | null>(null);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   
-  const { isPremium } = usePremium();
   const navigate = useNavigate();
   
   const filteredSubcategories = subcategories.filter(
@@ -42,13 +40,18 @@ export default function Index() {
 
   const handleAddIngredients = (ingredients: string[]) => {
     setSelectedIngredients(ingredients);
-    // Navigate to browse page with filters
-    navigate(`/browse?category=${selectedCategory}&subcategory=${selectedSubcategory}&cuisine=${selectedCuisine}&ingredients=${ingredients.join(',')}`);
+    // Navigate back to home page after adding ingredients
+    setStep("subcategory");
   };
 
   const skipIngredients = () => {
-    // Navigate to browse page with filters but without ingredients
-    navigate(`/browse?category=${selectedCategory}&subcategory=${selectedSubcategory}&cuisine=${selectedCuisine}`);
+    // Navigate back to home page without ingredients
+    setStep("subcategory");
+  };
+  
+  const findRecipes = () => {
+    // Navigate to browse page with filters
+    navigate(`/browse?category=${selectedCategory}&subcategory=${selectedSubcategory}&cuisine=${selectedCuisine}&ingredients=${selectedIngredients.join(',')}`);
   };
   
   const renderStepContent = () => {
@@ -59,7 +62,7 @@ export default function Index() {
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Select a Subcategory</h2>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Choose a specific category or use the AI chatbot for personalized recipes
+                Choose a specific category or explore by cuisine
               </p>
             </div>
             
@@ -140,7 +143,7 @@ export default function Index() {
                 variant="outline"
                 onClick={skipIngredients}
               >
-                Skip this step (show all recipes)
+                Skip this step
               </Button>
             </div>
           </>
@@ -176,7 +179,7 @@ export default function Index() {
   
   return (
     <AppLayout>
-      <header className="px-6 py-4">
+      <header className="px-6 py-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl font-bold text-chef-dark dark:text-white">Chef AI</h1>
@@ -214,7 +217,7 @@ export default function Index() {
         
         {step === "subcategory" && (
           <>
-            {/* Add Ingredients Section - Replacing Meal Type */}
+            {/* Add Ingredients Section */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
                 <h2 className="text-lg font-semibold dark:text-white">Add Ingredients</h2>
@@ -229,7 +232,7 @@ export default function Index() {
               </div>
               
               <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div className="flex gap-2 overflow-x-auto pb-3 mb-3">
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-3 scrollbar-hide">
                   {["Chicken", "Rice", "Garlic", "Potato", "Tomato", "Beef", "Onion", "Carrots"].map(ingredient => (
                     <Button
                       key={ingredient}
@@ -253,6 +256,19 @@ export default function Index() {
               </div>
             </div>
             
+            {/* Find Recipes Button */}
+            {selectedIngredients.length > 0 && (
+              <div className="mb-6">
+                <Button 
+                  className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-3 rounded-xl shadow-md flex justify-center items-center gap-2"
+                  onClick={findRecipes}
+                >
+                  <Search size={18} />
+                  <span className="font-medium">Find Recipes</span>
+                </Button>
+              </div>
+            )}
+            
             {/* Quick Filter Section */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
@@ -263,7 +279,7 @@ export default function Index() {
                   </Button>
                 </Link>
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 <Link to="/saved-recipes" className="flex-shrink-0">
                   <Button variant="outline" size="sm" className="border-gray-200 dark:border-gray-700 rounded-full flex items-center gap-1">
                     <Star size={15} />
@@ -297,49 +313,10 @@ export default function Index() {
                 Select ingredients from your pantry and find recipes you can make right now.
               </p>
               <Link to="/pantry">
-                <Button className="w-full bg-chef-primary">
+                <Button className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white">
                   Find Recipes With Your Ingredients
                 </Button>
               </Link>
-            </div>
-
-            {/* Add Your Recipe - New Button */}
-            <div className="mb-6 bg-gradient-to-r from-accent/10 to-chef-primary/10 dark:from-accent/30 dark:to-chef-primary/30 p-4 rounded-xl">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="bg-accent text-white p-2 rounded-full">
-                  <ChefHat size={20} />
-                </div>
-                <h2 className="text-lg font-semibold dark:text-white">Share Your Culinary Creation</h2>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-                Have a recipe you love? Share it with the Chef AI community!
-              </p>
-              <Link to="/add-recipe">
-                <Button className="w-full bg-accent text-accent-foreground">
-                  Add Your Recipe
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="mt-6 mb-10 text-center">
-              <h3 className="text-lg font-semibold mb-2 dark:text-white">Need personalized suggestions?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Tell our AI what ingredients you have and get recipe recommendations
-              </p>
-              <Link to="/ai-assistant">
-                <Button className="btn-primary">
-                  Use AI Assistant {!isPremium && "(Premium)"}
-                </Button>
-              </Link>
-              {!isPremium && (
-                <div className="mt-2">
-                  <Link to="/subscription">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      Upgrade for AI Voice & Image Recognition
-                    </Button>
-                  </Link>
-                </div>
-              )}
             </div>
           </>
         )}

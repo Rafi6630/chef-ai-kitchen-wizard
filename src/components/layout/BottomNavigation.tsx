@@ -10,22 +10,22 @@ export default function BottomNavigation() {
   };
   
   return (
-    <div className="bottom-nav">
-      <Link to="/" className={`bottom-nav-item ${isActive('/') ? 'active' : ''}`}>
+    <div className="bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 h-16 grid grid-cols-4 items-center z-50">
+      <Link to="/" className={`bottom-nav-item flex flex-col items-center justify-center h-full ${isActive('/') ? 'text-chef-primary' : 'text-gray-500'}`}>
         <Home size={20} />
-        <span>Home</span>
+        <span className="text-xs mt-1">Home</span>
       </Link>
-      <Link to="/browse" className={`bottom-nav-item ${isActive('/browse') ? 'active' : ''}`}>
+      <Link to="/browse" className={`bottom-nav-item flex flex-col items-center justify-center h-full ${isActive('/browse') ? 'text-chef-primary' : 'text-gray-500'}`}>
         <Search size={20} />
-        <span>Browse</span>
+        <span className="text-xs mt-1">Browse</span>
       </Link>
-      <Link to="/pantry" className={`bottom-nav-item ${isActive('/pantry') ? 'active' : ''}`}>
+      <Link to="/pantry" className={`bottom-nav-item flex flex-col items-center justify-center h-full ${isActive('/pantry') ? 'text-chef-primary' : 'text-gray-500'}`}>
         <BookOpen size={20} />
-        <span>Pantry</span>
+        <span className="text-xs mt-1">Pantry</span>
       </Link>
-      <Link to="/profile" className={`bottom-nav-item ${isActive('/profile') ? 'active' : ''}`}>
+      <Link to="/profile" className={`bottom-nav-item flex flex-col items-center justify-center h-full ${isActive('/profile') ? 'text-chef-primary' : 'text-gray-500'}`}>
         <User size={20} />
-        <span>Profile</span>
+        <span className="text-xs mt-1">Profile</span>
       </Link>
     </div>
   );

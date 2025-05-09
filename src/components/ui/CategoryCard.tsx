@@ -25,12 +25,13 @@ export default function CategoryCard({
     >
       {onClick ? (
         <div className="category-card">
-          <div className="aspect-square overflow-hidden rounded-lg relative">
+          <div className="aspect-square overflow-hidden rounded-lg relative shadow-sm">
             <img 
               src={subcategory.imageUrl} 
               alt={subcategory.name} 
               className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
             />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
             {showBadge && subcategory.premium && (
               <Badge 
                 variant="default" 
@@ -39,9 +40,7 @@ export default function CategoryCard({
                 Premium
               </Badge>
             )}
-          </div>
-          <div className="mt-2">
-            <h3 className="text-sm font-medium text-center line-clamp-1">{subcategory.name}</h3>
+            <h3 className="text-sm font-medium text-center absolute bottom-2 left-0 right-0 text-white">{subcategory.name}</h3>
           </div>
         </div>
       ) : (
@@ -49,12 +48,13 @@ export default function CategoryCard({
           to={`/chatbot?category=${subcategory.category}&subcategory=${subcategory.id}`}
           className="category-card block"
         >
-          <div className="aspect-square overflow-hidden rounded-lg relative">
+          <div className="aspect-square overflow-hidden rounded-lg relative shadow-sm">
             <img 
               src={subcategory.imageUrl} 
               alt={subcategory.name} 
               className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
             />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
             {showBadge && subcategory.premium && (
               <Badge 
                 variant="default" 
@@ -63,9 +63,7 @@ export default function CategoryCard({
                 Premium
               </Badge>
             )}
-          </div>
-          <div className="mt-2">
-            <h3 className="text-sm font-medium text-center line-clamp-1">{subcategory.name}</h3>
+            <h3 className="text-sm font-medium text-center absolute bottom-2 left-0 right-0 text-white">{subcategory.name}</h3>
           </div>
         </Link>
       )}

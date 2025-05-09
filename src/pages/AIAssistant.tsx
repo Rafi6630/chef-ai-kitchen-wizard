@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { recipes } from "@/data/mockData";
 import ChatMessage from "@/components/chat/ChatMessage";
 import { usePremium } from "@/contexts/PremiumContext";
-import PremiumFeatureOverlay from "@/components/subscription/PremiumFeatureOverlay";
+import PremiumFeatureGate from "@/components/ui/PremiumFeatureGate";
 
 export default function AIAssistant() {
   const [searchParams] = useSearchParams();
@@ -33,8 +34,7 @@ export default function AIAssistant() {
   const [hasIngredients, setHasIngredients] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { isPremium } = usePremium();
-
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -151,14 +151,6 @@ export default function AIAssistant() {
   };
   
   const handleVoiceInput = () => {
-    if (!isPremium) {
-      toast({
-        title: "Premium Feature",
-        description: "Voice input is available in the premium version!",
-      });
-      return;
-    }
-    
     toast({
       title: "Voice Input",
       description: "Voice input activated. Please speak clearly.",
@@ -166,151 +158,137 @@ export default function AIAssistant() {
   };
   
   const handleFileUpload = () => {
-    if (!isPremium) {
-      toast({
-        title: "Premium Feature",
-        description: "Image upload is available in the premium version!",
-      });
-      return;
-    }
-    
     toast({
       title: "Image Upload",
       description: "Please select an image of your ingredients.",
     });
   };
 
-  if (!isPremium) {
-    return (
-      <AppLayout>
-        <PremiumFeatureOverlay 
-          feature="AI Assistant"
-          title="AI Assistant" 
-          description="Get personalized recipe recommendations from our AI chef. Upload photos of ingredients, use voice commands, and more!"
-          featureList={[
-            "Advanced ingredient recognition",
-            "Voice command support",
-            "Upload photos of your ingredients",
-            "Personalized recipe suggestions",
-            "Nutritional guidance"
-          ]}
-          buttonText="Upgrade to Premium"
-          buttonLink="/subscription"
-          allowOneFreeUse={true}
-        />
-      </AppLayout>
-    );
-  }
-
   return (
     <AppLayout>
-      <div className="flex flex-col h-[calc(100dvh-5rem)]">
-        {/* Header */}
-        <header className="px-6 py-4 border-b border-gray-200 flex items-center bg-white dark:bg-gray-900">
-          <Link to="/" className="mr-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <ArrowLeft size={20} />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold capitalize">AI Assistant</h1>
-            {subcategory && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
-                {subcategory.replace("-", " ")}
-              </p>
-            )}
+      <PremiumFeatureGate 
+        feature="aiFeatures"
+        title="AI Assistant"
+        description="Get personalized recipe recommendations from our AI chef. Upload photos of ingredients, use voice commands, and more!"
+        featureList={[
+          "Advanced ingredient recognition",
+          "Voice command support",
+          "Upload photos of your ingredients",
+          "Personalized recipe suggestions",
+          "Nutritional guidance"
+        ]}
+        buttonText="Upgrade to Premium"
+        buttonLink="/subscription"
+        allowOneFreeUse={true}
+      >
+        <div className="flex flex-col h-[calc(100dvh-5rem)]">
+          {/* Header */}
+          <header className="px-6 py-4 border-b border-gray-200 flex items-center bg-white dark:bg-gray-900">
+            <Link to="/" className="mr-4">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft size={20} />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold capitalize">AI Assistant</h1>
+              {subcategory && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                  {subcategory.replace("-", " ")}
+                </p>
+              )}
+            </div>
+          </header>
+          
+          {/* Instructions */}
+          <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
+            <p>Tell me what ingredients you have, and I'll suggest recipes. You can also ask cooking questions!</p>
           </div>
-        </header>
-        
-        {/* Instructions */}
-        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
-          <p>Tell me what ingredients you have, and I'll suggest recipes. You can also ask cooking questions!</p>
-        </div>
-        
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className="flex items-start gap-2"
-              >
-                {message.isBot ? (
+          
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900">
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className="flex items-start gap-2"
+                >
+                  {message.isBot ? (
+                    <div className="w-8 h-8 rounded-full bg-chef-primary text-white flex items-center justify-center flex-shrink-0">
+                      <ChefHat size={16} />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                      <User size={16} />
+                    </div>
+                  )}
+                  <ChatMessage message={message} />
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex items-start gap-2">
                   <div className="w-8 h-8 rounded-full bg-chef-primary text-white flex items-center justify-center flex-shrink-0">
                     <ChefHat size={16} />
                   </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                    <User size={16} />
-                  </div>
-                )}
-                <ChatMessage message={message} />
-              </div>
-            ))}
-            {isTyping && (
-              <div className="flex items-start gap-2">
-                <div className="w-8 h-8 rounded-full bg-chef-primary text-white flex items-center justify-center flex-shrink-0">
-                  <ChefHat size={16} />
-                </div>
-                <div className="chatbot-bubble bot">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-75"></div>
-                    <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-150"></div>
+                  <div className="chatbot-bubble bot">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-75"></div>
+                      <div className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full animate-bounce delay-150"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+              )}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
+          
+          {/* Input Area */}
+          <form
+            onSubmit={handleSendMessage}
+            className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+          >
+            <div className="flex items-center space-x-2">
+              <Button
+                type="button"
+                variant="ghost"
+                className="rounded-full p-2"
+                onClick={handleFileUpload}
+              >
+                <Paperclip size={18} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="rounded-full p-2"
+                onClick={handleFileUpload}
+              >
+                <Image size={18} />
+              </Button>
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={hasIngredients ? "Ask about your recipe..." : "Enter your ingredients..."}
+                className="input-field"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                className="rounded-full p-2"
+                onClick={handleVoiceInput}
+              >
+                <Mic size={18} />
+              </Button>
+              <Button
+                type="submit"
+                className="rounded-full p-2 bg-chef-primary text-white hover:bg-opacity-90"
+                disabled={!input.trim() || isTyping}
+              >
+                <Send size={18} />
+              </Button>
+            </div>
+          </form>
         </div>
-        
-        {/* Input Area */}
-        <form
-          onSubmit={handleSendMessage}
-          className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
-        >
-          <div className="flex items-center space-x-2">
-            <Button
-              type="button"
-              variant="ghost"
-              className="rounded-full p-2"
-              onClick={handleFileUpload}
-            >
-              <Paperclip size={18} />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="rounded-full p-2"
-              onClick={handleFileUpload}
-            >
-              <Image size={18} />
-            </Button>
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={hasIngredients ? "Ask about your recipe..." : "Enter your ingredients..."}
-              className="input-field"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              className="rounded-full p-2"
-              onClick={handleVoiceInput}
-            >
-              <Mic size={18} />
-            </Button>
-            <Button
-              type="submit"
-              className="rounded-full p-2 bg-chef-primary text-white hover:bg-opacity-90"
-              disabled={!input.trim() || isTyping}
-            >
-              <Send size={18} />
-            </Button>
-          </div>
-        </form>
-      </div>
+      </PremiumFeatureGate>
     </AppLayout>
   );
 }
