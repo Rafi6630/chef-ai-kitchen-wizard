@@ -1,577 +1,263 @@
 
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, Search, Filter, Share } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
-import { Search, Filter, ArrowLeft, X, Globe } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Category, CuisineFilter, MealTypeFilter } from "@/types";
 import { recipes, subcategories } from "@/data/mockData";
-import { Recipe, Category, SubcategoryInfo } from "@/types";
 import CategoryCarousel from "@/components/ui/CategoryCarousel";
+import CuisineSelector from "@/components/ui/CuisineSelector";
 import MealTypeSelector from "@/components/ui/MealTypeSelector";
-import { MealTypeFilter } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Browse() {
-  const [searchParams] = useSearchParams();
-  const urlCategory = searchParams.get("category");
-  const urlSubcategory = searchParams.get("subcategory");
-  const urlCuisine = searchParams.get("cuisine");
-  const urlIngredients = searchParams.get("ingredients");
-  
+  const [selectedCategory, setSelectedCategory] = useState<Category>("food");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedCuisine, setSelectedCuisine] = useState<CuisineFilter | null>(null);
+  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
-  const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [step, setStep] = useState<"browse" | "category" | "cuisine" | "country">("browse");
-  const [selectedCategory, setSelectedCategory] = useState<Category>(urlCategory as Category || "food");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(urlSubcategory || null);
-  const [selectedCountry, setSelectedCountry] = useState<string>("all");
   
-  // Set initial state from URL parameters
-  useEffect(() => {
-    if (urlCategory) {
-      setSelectedCategory(urlCategory as Category);
-    }
-    
-    if (urlSubcategory) {
-      setSelectedSubcategory(urlSubcategory);
-    }
-    
-    if (urlCuisine && urlCuisine !== 'null') {
-      setSelectedCuisine(urlCuisine.toLowerCase());
-      setSelectedCountry(urlCuisine);
-    }
-    
-    if (urlIngredients && urlIngredients !== 'null') {
-      setSelectedIngredients(urlIngredients.split(','));
-    }
-  }, [urlCategory, urlSubcategory, urlCuisine, urlIngredients]);
-
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // Filter subcategories based on selected main category
   const filteredSubcategories = subcategories.filter(
-    (subcategory) => subcategory.category === selectedCategory
+    subcategory => subcategory.category === selectedCategory
   );
-
-  // Filter recipes based on search term, meal type, cuisine, ingredients, and categories
+  
+  // Get the selected subcategory info
+  const selectedSubcategoryInfo = subcategories.find(
+    subcategory => subcategory.id === selectedSubcategory
+  );
+  
+  // Apply all filters to recipes
   const filteredRecipes = recipes.filter(recipe => {
-    const matchesSearch = 
-      searchTerm === "" || 
-      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      recipe.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesCategory = !selectedCategory || recipe.category === selectedCategory;
+    const matchesSubcategory = !selectedSubcategory || recipe.subcategory === selectedSubcategory;
+    const matchesCuisine = !selectedCuisine || recipe.cuisine.toLowerCase() === selectedCuisine;
+    const matchesMealType = !selectedMealType || recipe.mealType === selectedMealType;
+    const matchesSearch = !searchTerm || 
+      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
       recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesMealType = selectedMealType === 'any' || recipe.category.toLowerCase() === selectedMealType;
-    
-    const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase() === selectedCuisine.toLowerCase();
-    
-    const matchesCountry = selectedCountry === 'all' || recipe.cuisine.toLowerCase() === selectedCountry.toLowerCase();
-    
-    const matchesCategory = selectedCategory ? recipe.category === selectedCategory : true;
-    
-    const matchesSubcategory = selectedSubcategory ? recipe.subcategory === selectedSubcategory : true;
-    
-    // If there are selected ingredients, check if recipe ingredients include them
-    const matchesIngredients = selectedIngredients.length === 0 || 
-      selectedIngredients.every(ingredient => 
-        recipe.ingredients.some(ri => 
-          ri.name.toLowerCase().includes(ingredient.toLowerCase())
-        )
-      );
-    
-    return matchesSearch && matchesMealType && matchesCuisine && matchesIngredients && matchesCategory && matchesSubcategory && matchesCountry;
+    return matchesCategory && matchesSubcategory && matchesCuisine && matchesMealType && matchesSearch;
   });
-
-  const handleSelectSubcategory = (subcategory: SubcategoryInfo) => {
-    setSelectedSubcategory(selectedSubcategory === subcategory.id ? null : subcategory.id);
+  
+  // Handle query params on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    
+    // Set filters from URL parameters
+    const categoryParam = params.get('category');
+    const subcategoryParam = params.get('subcategory');
+    const cuisineParam = params.get('cuisine');
+    const mealTypeParam = params.get('mealType');
+    const searchParam = params.get('search');
+    
+    if (categoryParam && ['food', 'desserts', 'drinks'].includes(categoryParam)) {
+      setSelectedCategory(categoryParam as Category);
+    }
+    
+    if (subcategoryParam) {
+      setSelectedSubcategory(subcategoryParam);
+    }
+    
+    if (cuisineParam && cuisineParam !== 'all') {
+      setSelectedCuisine(cuisineParam as CuisineFilter);
+    }
+    
+    if (mealTypeParam) {
+      setSelectedMealType(mealTypeParam as MealTypeFilter);
+    }
+    
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+  }, [location.search]);
+  
+  const handleSelectSubcategory = (subcategory: any) => {
+    setSelectedSubcategory(subcategory.id);
   };
   
-  const renderStepContent = () => {
-    switch(step) {
-      case "category":
-        return (
-          <div className="p-6">
-            <div className="flex items-center mb-4">
-              <Button
-                variant="ghost" 
-                onClick={() => setStep("browse")}
-                className="mr-2"
-              >
-                <ArrowLeft size={18} />
-              </Button>
-              <h2 className="text-xl font-bold">Select Meal Type</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              <Button 
-                variant={selectedMealType === 'any' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('any');
-                  setStep("cuisine");
-                }}
-              >
-                All Meals
-              </Button>
-              <Button 
-                variant={selectedMealType === 'breakfast' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('breakfast');
-                  setStep("cuisine");
-                }}
-              >
-                Breakfast
-              </Button>
-              <Button 
-                variant={selectedMealType === 'lunch' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('lunch');
-                  setStep("cuisine");
-                }}
-              >
-                Lunch
-              </Button>
-              <Button 
-                variant={selectedMealType === 'dinner' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('dinner');
-                  setStep("cuisine");
-                }}
-              >
-                Dinner
-              </Button>
-              <Button 
-                variant={selectedMealType === 'dessert' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('dessert');
-                  setStep("cuisine");
-                }}
-              >
-                Dessert
-              </Button>
-              <Button 
-                variant={selectedMealType === 'snack' ? 'default' : 'outline'}
-                className="justify-start h-16 text-lg"
-                onClick={() => {
-                  setSelectedMealType('snack');
-                  setStep("cuisine");
-                }}
-              >
-                Snack
-              </Button>
-            </div>
-          </div>
-        );
-        
-      case "cuisine":
-        return (
-          <div className="p-6">
-            <div className="flex items-center mb-4">
-              <Button
-                variant="ghost" 
-                onClick={() => setStep("category")}
-                className="mr-2"
-              >
-                <ArrowLeft size={18} />
-              </Button>
-              <h2 className="text-xl font-bold">Select Cuisine</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              <Button 
-                variant={selectedCuisine === 'all' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('all');
-                  setStep("browse");
-                }}
-              >
-                All Cuisines
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'italian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('italian');
-                  setStep("browse");
-                }}
-              >
-                Italian
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'mexican' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('mexican');
-                  setStep("browse");
-                }}
-              >
-                Mexican
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'asian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('asian');
-                  setStep("browse");
-                }}
-              >
-                Asian
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'american' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('american');
-                  setStep("browse");
-                }}
-              >
-                American
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'indian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('indian');
-                  setStep("browse");
-                }}
-              >
-                Indian
-              </Button>
-              <Button 
-                variant={selectedCuisine === 'mediterranean' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCuisine('mediterranean');
-                  setStep("browse");
-                }}
-              >
-                Mediterranean
-              </Button>
-            </div>
-          </div>
-        );
-
-      case "country":
-        return (
-          <div className="p-6">
-            <div className="flex items-center mb-4">
-              <Button
-                variant="ghost" 
-                onClick={() => setStep("browse")}
-                className="mr-2"
-              >
-                <ArrowLeft size={18} />
-              </Button>
-              <h2 className="text-xl font-bold">Select Country</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              <Button 
-                variant={selectedCountry === 'all' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('all');
-                  setStep("browse");
-                }}
-              >
-                All Countries
-              </Button>
-              <Button 
-                variant={selectedCountry === 'Italian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('Italian');
-                  setStep("browse");
-                }}
-              >
-                Italy
-              </Button>
-              <Button 
-                variant={selectedCountry === 'Mexican' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('Mexican');
-                  setStep("browse");
-                }}
-              >
-                Mexico
-              </Button>
-              <Button 
-                variant={selectedCountry === 'Asian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('Asian');
-                  setStep("browse");
-                }}
-              >
-                Japan
-              </Button>
-              <Button 
-                variant={selectedCountry === 'American' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('American');
-                  setStep("browse");
-                }}
-              >
-                USA
-              </Button>
-              <Button 
-                variant={selectedCountry === 'Indian' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('Indian');
-                  setStep("browse");
-                }}
-              >
-                India
-              </Button>
-              <Button 
-                variant={selectedCountry === 'Mediterranean' ? 'default' : 'outline'}
-                className="justify-start h-12"
-                onClick={() => {
-                  setSelectedCountry('Mediterranean');
-                  setStep("browse");
-                }}
-              >
-                Greece
-              </Button>
-            </div>
-          </div>
-        );
-                
-      default: // browse
-        return (
-          <>
-            <header className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
-              <div className="flex items-center mb-3">
-                <Link to="/" className="mr-3">
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <ArrowLeft size={20} />
-                  </Button>
-                </Link>
-                <h1 className="text-2xl font-bold mb-0 flex items-center">
-                  <Globe className="mr-2" /> Global Cuisine
-                </h1>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                  <Input 
-                    placeholder="Search recipes..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 input-field"
-                  />
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="rounded-lg p-2"
-                  onClick={() => setStep("country")}
-                >
-                  <Filter size={20} />
-                </Button>
-              </div>
-              
-              {/* Country selection button */}
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button 
-                  variant="outline"
-                  className="flex items-center gap-1"
-                  onClick={() => setStep("country")}
-                >
-                  <Globe size={16} />
-                  <span>{selectedCountry === 'all' ? 'All Countries' : selectedCountry}</span>
-                </Button>
-              </div>
-              
-              {/* Category filters */}
-              <div className="mt-4">
-                <Tabs 
-                  value={selectedCategory}
-                  onValueChange={(value) => setSelectedCategory(value as Category)}
-                  className="w-full"
-                >
-                  <TabsList className="grid grid-cols-3 mb-4">
-                    <TabsTrigger value="food" className="font-medium">Food</TabsTrigger>
-                    <TabsTrigger value="desserts" className="font-medium">Desserts</TabsTrigger>
-                    <TabsTrigger value="drinks" className="font-medium">Drinks</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                
-                {/* Subcategory carousel */}
-                <div className="mb-4">
-                  <CategoryCarousel 
-                    subcategories={filteredSubcategories}
-                    onSelectSubcategory={handleSelectSubcategory}
-                    selectedSubcategoryId={selectedSubcategory || undefined}
-                  />
-                </div>
-                
-                {/* Meal Type selector */}
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium mb-2">Meal Type</h3>
-                  <MealTypeSelector 
-                    onSelectMealType={setSelectedMealType}
-                    selectedMealType={selectedMealType}
-                  />
-                </div>
-              </div>
-              
-              {/* Applied filters */}
-              {(selectedMealType !== 'any' || selectedCuisine !== 'all' || 
-                selectedIngredients.length > 0 || selectedSubcategory || selectedCountry !== 'all') && (
-                <div className="mt-4">
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMealType !== 'any' && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
-                        <span>Meal: {selectedMealType}</span>
-                        <button 
-                          onClick={() => setSelectedMealType('any')}
-                          className="ml-2 hover:text-red-500"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    )}
-                    
-                    {selectedSubcategory && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
-                        <span>
-                          Subcategory: {subcategories.find(s => s.id === selectedSubcategory)?.name || selectedSubcategory}
-                        </span>
-                        <button 
-                          onClick={() => setSelectedSubcategory(null)}
-                          className="ml-2 hover:text-red-500"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    )}
-                    
-                    {selectedCuisine !== 'all' && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
-                        <span>Cuisine: {selectedCuisine}</span>
-                        <button 
-                          onClick={() => setSelectedCuisine('all')}
-                          className="ml-2 hover:text-red-500"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    )}
-                    
-                    {selectedCountry !== 'all' && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
-                        <span>Country: {selectedCountry}</span>
-                        <button 
-                          onClick={() => setSelectedCountry('all')}
-                          className="ml-2 hover:text-red-500"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    )}
-                    
-                    {selectedIngredients.length > 0 && selectedIngredients.map(ingredient => (
-                      <div key={ingredient} className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
-                        <span>{ingredient}</span>
-                        <button 
-                          onClick={() => setSelectedIngredients(prev => prev.filter(i => i !== ingredient))}
-                          className="ml-2 hover:text-red-500"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                    
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-red-500 hover:text-red-600"
-                      onClick={() => {
-                        setSelectedMealType('any');
-                        setSelectedCuisine('all');
-                        setSelectedIngredients([]);
-                        setSelectedSubcategory(null);
-                        setSelectedCountry('all');
-                      }}
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Find Recipes button */}
-              <div className="mt-4">
-                <Button 
-                  className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-2"
-                  onClick={() => {
-                    // Just refresh the list
-                  }}
-                >
-                  <Search size={18} className="mr-2" />
-                  Find Recipes
-                </Button>
-              </div>
-            </header>
-            
-            <main className="p-6">
-              <div className="space-y-6">
-                {filteredRecipes.length > 0 ? (
-                  filteredRecipes.map(recipe => (
-                    <RecipeCard key={recipe.id} recipe={recipe} />
-                  ))
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">No recipes found matching your search.</p>
-                  </div>
-                )}
-              </div>
-            </main>
-          </>
-        );
-    }
+  const handleSelectCuisine = (cuisine: CuisineFilter) => {
+    setSelectedCuisine(cuisine === selectedCuisine ? null : cuisine);
+  };
+  
+  const handleSelectMealType = (mealType: MealTypeFilter) => {
+    setSelectedMealType(mealType === selectedMealType ? null : mealType);
+  };
+  
+  const applyFilters = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Showing recipes matching your filters",
+    });
+  };
+  
+  const clearFilters = () => {
+    setSelectedSubcategory(null);
+    setSelectedCuisine(null);
+    setSelectedMealType(null);
+    setSearchTerm("");
+    
+    toast({
+      title: "Filters Cleared",
+      description: "Showing all recipes",
+    });
   };
   
   return (
     <AppLayout>
-      {renderStepContent()}
-    </AppLayout>
-  );
-}
-
-function RecipeCard({ recipe }: { recipe: Recipe }) {
-  return (
-    <Link to={`/recipe/${recipe.id}`} className="block">
-      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 transform transition-transform hover:scale-[1.02]">
-        <div className="relative aspect-video">
-          <img 
-            src={recipe.imageUrl} 
-            alt={recipe.title} 
-            className="w-full h-full object-cover"
+      <header className="px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <h1 className="text-2xl font-bold mb-1">Global Cuisine</h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">Browse recipes from around the world</p>
+        
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input 
+              placeholder="Search recipes..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Button variant="outline" className="rounded-lg p-2">
+            <Filter size={20} />
+          </Button>
+        </div>
+        
+        {/* Category tabs */}
+        <Tabs 
+          defaultValue="food" 
+          value={selectedCategory}
+          onValueChange={(value) => {
+            setSelectedCategory(value as Category);
+            setSelectedSubcategory(null); // Reset subcategory when changing main category
+          }}
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-3">
+            <TabsTrigger value="food">Food</TabsTrigger>
+            <TabsTrigger value="desserts">Desserts</TabsTrigger>
+            <TabsTrigger value="drinks">Drinks</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </header>
+      
+      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="mb-4">
+          <h2 className="font-medium text-sm mb-2">Select Subcategory</h2>
+          <CategoryCarousel 
+            subcategories={filteredSubcategories}
+            onSelectSubcategory={handleSelectSubcategory}
+            selectedSubcategoryId={selectedSubcategory || undefined}
           />
-          {recipe.isPremiumOnly && (
-            <div className="absolute top-2 right-2 bg-chef-primary text-white text-xs font-semibold px-2 py-1 rounded-full">
-              Premium
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h2 className="font-medium text-sm mb-2">Choose Cuisine</h2>
+            <CuisineSelector 
+              onSelectCuisine={handleSelectCuisine} 
+              selectedCuisine={selectedCuisine || undefined}
+            />
+          </div>
+          
+          <div>
+            <h2 className="font-medium text-sm mb-2">Meal Type</h2>
+            <MealTypeSelector 
+              onSelect={handleSelectMealType}
+              selectedMealType={selectedMealType || undefined}
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-between mt-4">
+          <Button variant="outline" onClick={clearFilters}>
+            Clear Filters
+          </Button>
+          <Button className="bg-chef-primary" onClick={applyFilters}>
+            Apply Filters
+          </Button>
+        </div>
+      </div>
+      
+      <div className="p-6">
+        <h2 className="text-xl font-semibold mb-2">
+          {selectedSubcategoryInfo ? selectedSubcategoryInfo.name : "All Recipes"}
+          {selectedCuisine && ` • ${selectedCuisine}`}
+          {selectedMealType && ` • ${selectedMealType}`}
+        </h2>
+        
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+          {filteredRecipes.length} recipes found
+        </p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {filteredRecipes.length > 0 ? (
+            filteredRecipes.map((recipe) => (
+              <Link key={recipe.id} to={`/recipe/${recipe.id}`}>
+                <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                  <div className="relative aspect-video">
+                    <img 
+                      src={recipe.imageUrl} 
+                      alt={recipe.title} 
+                      className="w-full h-full object-cover"
+                    />
+                    {recipe.isPremiumOnly && (
+                      <div className="absolute top-2 right-2 bg-gradient-to-r from-chef-primary to-chef-accent text-white text-xs px-2 py-0.5 rounded-full">
+                        Premium
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-semibold text-base">{recipe.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 mb-2">
+                      {recipe.description}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex gap-2">
+                        <span>⏱️ {recipe.prepTime + recipe.cookTime} mins</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">{recipe.difficulty}</span>
+                      </div>
+                      <span className="capitalize">{recipe.cuisine}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-2 text-center py-12">
+              <p className="text-gray-500 mb-4">No recipes found matching your criteria</p>
+              <Button variant="outline" onClick={clearFilters}>Reset Filters</Button>
             </div>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-lg dark:text-white">{recipe.title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">{recipe.description}</p>
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 justify-between">
-            <div className="flex gap-2">
-              <span>⏱️ {recipe.prepTime + recipe.cookTime} mins</span>
-              <span>|</span>
-              <span>👨‍🍳 {recipe.difficulty}</span>
+        
+        {/* Share Your Culinary Creation */}
+        <div className="mt-8 bg-gradient-to-r from-chef-secondary/10 to-chef-accent/10 dark:from-chef-secondary/30 dark:to-chef-accent/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="bg-chef-secondary text-white p-2 rounded-full">
+              <Share size={20} />
             </div>
-            <span className="text-xs font-medium">{recipe.cuisine}</span>
+            <h2 className="text-lg font-semibold dark:text-white">Share Your Culinary Creation</h2>
           </div>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+            Share your recipes, get feedback, and inspire others with your cooking skills.
+          </p>
+          <Link to="/add-recipe">
+            <Button className="w-full bg-chef-secondary hover:bg-chef-secondary/90 text-white">
+              Create and Share Recipe
+            </Button>
+          </Link>
         </div>
       </div>
-    </Link>
+    </AppLayout>
   );
 }

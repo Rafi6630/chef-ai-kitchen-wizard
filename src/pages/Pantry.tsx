@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PantryItem } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 // Sample pantry data
 const initialPantryItems: PantryItem[] = [
@@ -110,6 +110,7 @@ export default function Pantry() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Filter pantry items based on search term
   const filteredItems = pantryItems.filter(item =>
@@ -223,8 +224,35 @@ export default function Pantry() {
       description: `Searching for recipes with ${selectedItemNames.join(", ")}`
     });
     
-    // Navigate to chatbot or recipe search page with selected items
-    // In a real app, you'd use router navigation with the selected items
+    // Navigate to browse page with selected items as ingredients
+    navigate(`/?ingredients=${selectedItemNames.join(',')}`);
+  };
+  
+  // Quick Find Recipe button handler
+  const handleFindQuickRecipe = () => {
+    if (pantryItems.length === 0) {
+      toast({
+        title: "Empty Pantry",
+        description: "Add ingredients to your pantry first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Select 3-5 random items from pantry for a quick recipe
+    const randomCount = Math.floor(Math.random() * 3) + 3; // 3-5 items
+    const randomItems = [...pantryItems]
+      .sort(() => 0.5 - Math.random()) // Shuffle array
+      .slice(0, randomCount)
+      .map(item => item.name);
+    
+    toast({
+      title: "Finding Quick Recipe",
+      description: `Using ${randomItems.join(", ")}`
+    });
+
+    // Navigate to home with random ingredients
+    navigate(`/?ingredients=${randomItems.join(',')}`);
   };
   
   return (
@@ -344,6 +372,16 @@ export default function Pantry() {
               </form>
             </DialogContent>
           </Dialog>
+        </div>
+        
+        {/* Quick Find Recipe Button */}
+        <div className="mb-4">
+          <Button 
+            className="w-full bg-chef-secondary"
+            onClick={handleFindQuickRecipe}
+          >
+            Find Quick Recipe with Pantry Items
+          </Button>
         </div>
         
         {selectedItems.length > 0 && (
