@@ -8,13 +8,24 @@ interface PremiumFeatureGateProps {
   featureDisplay?: string;
   children: ReactNode;
   allowOneFreeUse?: boolean;
+  // Add optional props to pass through
+  title?: string;
+  description?: string;
+  featureList?: string[];
+  buttonText?: string;
+  buttonLink?: string;
 }
 
 export default function PremiumFeatureGate({ 
   feature,
   featureDisplay,
   children,
-  allowOneFreeUse = false
+  allowOneFreeUse = false,
+  title,
+  description,
+  featureList,
+  buttonText,
+  buttonLink
 }: PremiumFeatureGateProps) {
   const { isPremium, premiumFeatures, checkDailyUsage } = usePremium();
   
@@ -40,8 +51,13 @@ export default function PremiumFeatureGate({
     <div className="relative">
       {children}
       <PremiumFeatureOverlay 
-        feature={featureDisplay || feature} 
-        allowOneFreeUse={allowOneFreeUse} 
+        feature={featureDisplay || feature}
+        allowOneFreeUse={allowOneFreeUse}
+        title={title}
+        description={description}
+        featureList={featureList}
+        buttonText={buttonText}
+        buttonLink={buttonLink}
       />
     </div>
   );
