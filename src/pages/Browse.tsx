@@ -23,9 +23,10 @@ export default function Browse() {
   const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-  const [step, setStep] = useState<"browse" | "category" | "cuisine">("browse");
+  const [step, setStep] = useState<"browse" | "category" | "cuisine" | "country">("browse");
   const [selectedCategory, setSelectedCategory] = useState<Category>(urlCategory as Category || "food");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(urlSubcategory || null);
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
   
   // Set initial state from URL parameters
   useEffect(() => {
@@ -37,11 +38,12 @@ export default function Browse() {
       setSelectedSubcategory(urlSubcategory);
     }
     
-    if (urlCuisine) {
+    if (urlCuisine && urlCuisine !== 'null') {
       setSelectedCuisine(urlCuisine.toLowerCase());
+      setSelectedCountry(urlCuisine);
     }
     
-    if (urlIngredients) {
+    if (urlIngredients && urlIngredients !== 'null') {
       setSelectedIngredients(urlIngredients.split(','));
     }
   }, [urlCategory, urlSubcategory, urlCuisine, urlIngredients]);
@@ -60,7 +62,9 @@ export default function Browse() {
     
     const matchesMealType = selectedMealType === 'any' || recipe.category.toLowerCase() === selectedMealType;
     
-    const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase() === selectedCuisine;
+    const matchesCuisine = selectedCuisine === 'all' || recipe.cuisine.toLowerCase() === selectedCuisine.toLowerCase();
+    
+    const matchesCountry = selectedCountry === 'all' || recipe.cuisine.toLowerCase() === selectedCountry.toLowerCase();
     
     const matchesCategory = selectedCategory ? recipe.category === selectedCategory : true;
     
@@ -74,7 +78,7 @@ export default function Browse() {
         )
       );
     
-    return matchesSearch && matchesMealType && matchesCuisine && matchesIngredients && matchesCategory && matchesSubcategory;
+    return matchesSearch && matchesMealType && matchesCuisine && matchesIngredients && matchesCategory && matchesSubcategory && matchesCountry;
   });
 
   const handleSelectSubcategory = (subcategory: SubcategoryInfo) => {
@@ -248,6 +252,94 @@ export default function Browse() {
             </div>
           </div>
         );
+
+      case "country":
+        return (
+          <div className="p-6">
+            <div className="flex items-center mb-4">
+              <Button
+                variant="ghost" 
+                onClick={() => setStep("browse")}
+                className="mr-2"
+              >
+                <ArrowLeft size={18} />
+              </Button>
+              <h2 className="text-xl font-bold">Select Country</h2>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              <Button 
+                variant={selectedCountry === 'all' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('all');
+                  setStep("browse");
+                }}
+              >
+                All Countries
+              </Button>
+              <Button 
+                variant={selectedCountry === 'Italian' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('Italian');
+                  setStep("browse");
+                }}
+              >
+                Italy
+              </Button>
+              <Button 
+                variant={selectedCountry === 'Mexican' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('Mexican');
+                  setStep("browse");
+                }}
+              >
+                Mexico
+              </Button>
+              <Button 
+                variant={selectedCountry === 'Asian' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('Asian');
+                  setStep("browse");
+                }}
+              >
+                Japan
+              </Button>
+              <Button 
+                variant={selectedCountry === 'American' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('American');
+                  setStep("browse");
+                }}
+              >
+                USA
+              </Button>
+              <Button 
+                variant={selectedCountry === 'Indian' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('Indian');
+                  setStep("browse");
+                }}
+              >
+                India
+              </Button>
+              <Button 
+                variant={selectedCountry === 'Mediterranean' ? 'default' : 'outline'}
+                className="justify-start h-12"
+                onClick={() => {
+                  setSelectedCountry('Mediterranean');
+                  setStep("browse");
+                }}
+              >
+                Greece
+              </Button>
+            </div>
+          </div>
+        );
                 
       default: // browse
         return (
@@ -276,9 +368,21 @@ export default function Browse() {
                 <Button 
                   variant="outline" 
                   className="rounded-lg p-2"
-                  onClick={() => setStep("category")}
+                  onClick={() => setStep("country")}
                 >
                   <Filter size={20} />
+                </Button>
+              </div>
+              
+              {/* Country selection button */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button 
+                  variant="outline"
+                  className="flex items-center gap-1"
+                  onClick={() => setStep("country")}
+                >
+                  <Globe size={16} />
+                  <span>{selectedCountry === 'all' ? 'All Countries' : selectedCountry}</span>
                 </Button>
               </div>
               
@@ -317,11 +421,11 @@ export default function Browse() {
               
               {/* Applied filters */}
               {(selectedMealType !== 'any' || selectedCuisine !== 'all' || 
-                selectedIngredients.length > 0 || selectedSubcategory) && (
+                selectedIngredients.length > 0 || selectedSubcategory || selectedCountry !== 'all') && (
                 <div className="mt-4">
                   <div className="flex flex-wrap gap-2">
                     {selectedMealType !== 'any' && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
+                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
                         <span>Meal: {selectedMealType}</span>
                         <button 
                           onClick={() => setSelectedMealType('any')}
@@ -333,7 +437,7 @@ export default function Browse() {
                     )}
                     
                     {selectedSubcategory && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
+                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
                         <span>
                           Subcategory: {subcategories.find(s => s.id === selectedSubcategory)?.name || selectedSubcategory}
                         </span>
@@ -347,7 +451,7 @@ export default function Browse() {
                     )}
                     
                     {selectedCuisine !== 'all' && (
-                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
+                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
                         <span>Cuisine: {selectedCuisine}</span>
                         <button 
                           onClick={() => setSelectedCuisine('all')}
@@ -358,8 +462,20 @@ export default function Browse() {
                       </div>
                     )}
                     
-                    {selectedIngredients.map(ingredient => (
-                      <div key={ingredient} className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm">
+                    {selectedCountry !== 'all' && (
+                      <div className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
+                        <span>Country: {selectedCountry}</span>
+                        <button 
+                          onClick={() => setSelectedCountry('all')}
+                          className="ml-2 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
+                    
+                    {selectedIngredients.length > 0 && selectedIngredients.map(ingredient => (
+                      <div key={ingredient} className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center text-sm border border-chef-primary/20">
                         <span>{ingredient}</span>
                         <button 
                           onClick={() => setSelectedIngredients(prev => prev.filter(i => i !== ingredient))}
@@ -379,6 +495,7 @@ export default function Browse() {
                         setSelectedCuisine('all');
                         setSelectedIngredients([]);
                         setSelectedSubcategory(null);
+                        setSelectedCountry('all');
                       }}
                     >
                       Clear All
@@ -386,6 +503,19 @@ export default function Browse() {
                   </div>
                 </div>
               )}
+
+              {/* Find Recipes button */}
+              <div className="mt-4">
+                <Button 
+                  className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-2"
+                  onClick={() => {
+                    // Just refresh the list
+                  }}
+                >
+                  <Search size={18} className="mr-2" />
+                  Find Recipes
+                </Button>
+              </div>
             </header>
             
             <main className="p-6">

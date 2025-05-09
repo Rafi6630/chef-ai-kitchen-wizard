@@ -21,7 +21,7 @@ export default function BottomNavigation() {
         <div className={`p-1.5 rounded-full ${isActive('/browse') ? 'bg-chef-primary/10' : ''}`}>
           <Search size={20} />
         </div>
-        <span className="text-xs mt-1">Browse</span>
+        <span className="text-xs mt-1">Global</span>
       </Link>
       <Link to="/pantry" className={`bottom-nav-item flex flex-col items-center justify-center h-full ${isActive('/pantry') ? 'text-chef-primary' : 'text-gray-500 dark:text-gray-400'}`}>
         <div className={`p-1.5 rounded-full ${isActive('/pantry') ? 'bg-chef-primary/10' : ''}`}>

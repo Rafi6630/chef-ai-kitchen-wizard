@@ -14,7 +14,7 @@ export default function AppLayout({
   className = ""
 }: AppLayoutProps) {
   return (
-    <div className="app-container min-h-screen bg-gray-50 dark:bg-gray-900 border-x border-gray-100 dark:border-gray-800 max-w-screen-lg mx-auto">
+    <div className="app-container min-h-screen bg-gray-50 dark:bg-gray-900 border-x border-gray-100 dark:border-gray-800 max-w-lg mx-auto shadow-xl">
       <div className={`pb-20 ${className} max-w-full overflow-x-hidden`}>
         {children}
       </div>

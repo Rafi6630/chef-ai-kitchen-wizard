@@ -37,32 +37,70 @@ export default function LanguageSelector() {
       const lang = languages.find(l => l.code === savedLang);
       if (lang) {
         setCurrentLanguage(lang);
+        applyLanguageSettings(lang);
       }
     }
   }, []); // Run only on component mount
 
-  // Effect to apply language changes when currentLanguage changes
-  useEffect(() => {
-    document.documentElement.lang = currentLanguage.code;
-    if (currentLanguage.rtl) {
+  const applyLanguageSettings = (language: Language) => {
+    document.documentElement.lang = language.code;
+    
+    // Set text direction for RTL languages
+    if (language.rtl) {
       document.documentElement.dir = "rtl";
       document.body.classList.add("rtl");
+      
+      // Add RTL specific styles
+      const rtlStyle = document.getElementById('rtl-styles');
+      if (!rtlStyle) {
+        const styleTag = document.createElement('style');
+        styleTag.id = 'rtl-styles';
+        styleTag.innerHTML = `
+          .rtl .app-container {
+            direction: rtl;
+          }
+          .rtl input, .rtl textarea {
+            text-align: right;
+          }
+          .rtl .dropdown-menu {
+            text-align: right;
+          }
+          .rtl .flex {
+            flex-direction: row-reverse;
+          }
+          .rtl .ml-2 {
+            margin-left: 0;
+            margin-right: 0.5rem;
+          }
+          .rtl .mr-2 {
+            margin-right: 0;
+            margin-left: 0.5rem;
+          }
+        `;
+        document.head.appendChild(styleTag);
+      }
     } else {
       document.documentElement.dir = "ltr";
       document.body.classList.remove("rtl");
+      
+      // Remove RTL specific styles
+      const rtlStyle = document.getElementById('rtl-styles');
+      if (rtlStyle) {
+        rtlStyle.remove();
+      }
     }
-    localStorage.setItem("preferredLanguage", currentLanguage.code);
     
-    // In real app, we would load translated strings here
-    // For now we just show a toast notification
-    toast({
-      title: `Language Changed: ${currentLanguage.name}`,
-      description: `The app language has been changed to ${currentLanguage.nativeName}.`,
-    });
-  }, [currentLanguage, toast]);
+    localStorage.setItem("preferredLanguage", language.code);
+  };
 
   const handleLanguageChange = (lang: Language) => {
     setCurrentLanguage(lang);
+    applyLanguageSettings(lang);
+    
+    toast({
+      title: `Language Changed: ${lang.name}`,
+      description: `The app language has been changed to ${lang.nativeName}.`,
+    });
   };
 
   return (
@@ -71,19 +109,19 @@ export default function LanguageSelector() {
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-1 text-gray-500"
+          className="flex items-center gap-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md"
         >
           <Globe size={16} />
           <span>{currentLanguage.nativeName}</span>
           <ChevronDown size={14} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-48 border border-gray-200 dark:border-gray-700">
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.code}
             onClick={() => handleLanguageChange(language)}
-            className="flex items-center justify-between"
+            className="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <span>
               {language.nativeName} {language.name !== language.nativeName && `(${language.name})`}
