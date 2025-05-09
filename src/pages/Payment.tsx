@@ -7,8 +7,7 @@ import {
   Check, 
   CreditCard as PaypalIcon, 
   Apple, 
-  Smartphone,
-  CreditCard as BankIcon
+  Smartphone
 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
@@ -16,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePremium } from "@/contexts/PremiumContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type PaymentMethodType = "card" | "paypal" | "apple" | "google" | "bank";
+type PaymentMethodType = "card" | "paypal" | "apple" | "google";
 
 export default function Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -25,9 +24,6 @@ export default function Payment() {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>("card");
-  const [bankName, setBankName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-  const [routingNumber, setRoutingNumber] = useState("");
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -192,56 +188,6 @@ export default function Payment() {
           </div>
         );
         
-      case "bank":
-        return (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Bank Name
-              </label>
-              <input
-                type="text"
-                id="bankName"
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-                placeholder="Enter your bank name"
-                className="input-field w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Account Number
-              </label>
-              <input
-                type="text"
-                id="accountNumber"
-                value={accountNumber}
-                onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter your account number"
-                className="input-field w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="routingNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Routing Number
-              </label>
-              <input
-                type="text"
-                id="routingNumber"
-                value={routingNumber}
-                onChange={(e) => setRoutingNumber(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter routing number"
-                className="input-field w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                required
-              />
-            </div>
-          </div>
-        );
-        
       default:
         return null;
     }
@@ -291,19 +237,17 @@ export default function Payment() {
             <h2 className="font-semibold text-lg mb-4 dark:text-white">Payment Method</h2>
             
             <Tabs defaultValue="card" onValueChange={(value) => setPaymentMethod(value as PaymentMethodType)}>
-              <TabsList className="grid grid-cols-5 mb-6">
+              <TabsList className="grid grid-cols-4 mb-6">
                 <TabsTrigger value="card">Card</TabsTrigger>
                 <TabsTrigger value="paypal">PayPal</TabsTrigger>
                 <TabsTrigger value="apple">Apple Pay</TabsTrigger>
                 <TabsTrigger value="google">Google Pay</TabsTrigger>
-                <TabsTrigger value="bank">Bank</TabsTrigger>
               </TabsList>
               
               <TabsContent value="card">{renderPaymentMethodContent()}</TabsContent>
               <TabsContent value="paypal">{renderPaymentMethodContent()}</TabsContent>
               <TabsContent value="apple">{renderPaymentMethodContent()}</TabsContent>
               <TabsContent value="google">{renderPaymentMethodContent()}</TabsContent>
-              <TabsContent value="bank">{renderPaymentMethodContent()}</TabsContent>
             </Tabs>
           </div>
           

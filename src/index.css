@@ -104,7 +104,7 @@
   }
   
   .dark .bg-white, .dark .bg-chef-light {
-    @apply bg-gray-800;
+    @apply bg-gray-800 border-gray-700;
   }
   
   .dark .border-gray-200, .dark .border-gray-100 {
@@ -163,6 +163,28 @@
   
   .chatbot-bubble.bot {
     @apply bg-gray-100 dark:bg-gray-800 text-chef-dark dark:text-gray-100 mr-auto;
+  }
+
+  /* Language support classes */
+  .rtl {
+    direction: rtl;
+  }
+  
+  .ltr {
+    direction: ltr;
+  }
+  
+  /* Multi-language font support */
+  .lang-ar {
+    font-family: 'Amiri', serif;
+  }
+  
+  .lang-zh {
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  
+  .lang-ja {
+    font-family: 'Noto Sans JP', sans-serif;
   }
 }
 

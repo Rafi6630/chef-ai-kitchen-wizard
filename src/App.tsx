@@ -23,7 +23,6 @@ import Payment from "./pages/Payment";
 import PaymentMethods from "./pages/PaymentMethods";
 import MealPlanning from "./pages/MealPlanning";
 import DietaryPreferences from "./pages/DietaryPreferences";
-import HealthInfo from "./pages/HealthInfo";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -70,7 +69,6 @@ const App = () => (
             <Route path="/account/data" element={<AccountData />} />
             <Route path="/add-recipe" element={<AddRecipe />} />
             <Route path="/dietary-preferences" element={<DietaryPreferences />} />
-            <Route path="/health-info" element={<HealthInfo />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/about" element={<About />} />

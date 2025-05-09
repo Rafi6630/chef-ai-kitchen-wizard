@@ -19,12 +19,12 @@ export default function CategoryCard({
   return (
     <div 
       className={`transition-all duration-200 ${onClick ? 'cursor-pointer transform hover:scale-105' : ''} ${
-        isSelected ? 'ring-2 ring-chef-primary ring-offset-2' : ''
+        isSelected ? 'ring-2 ring-chef-primary ring-offset-2 dark:ring-offset-gray-900' : ''
       }`}
       onClick={onClick}
     >
       {onClick ? (
-        <div className="category-card">
+        <div className="category-card border border-gray-200 dark:border-gray-700">
           <div className="aspect-square overflow-hidden rounded-lg relative shadow-sm">
             <img 
               src={subcategory.imageUrl} 
@@ -45,8 +45,8 @@ export default function CategoryCard({
         </div>
       ) : (
         <Link 
-          to={`/chatbot?category=${subcategory.category}&subcategory=${subcategory.id}`}
-          className="category-card block"
+          to={`/browse?category=${subcategory.category}&subcategory=${subcategory.id}`}
+          className="category-card block border border-gray-200 dark:border-gray-700"
         >
           <div className="aspect-square overflow-hidden rounded-lg relative shadow-sm">
             <img 

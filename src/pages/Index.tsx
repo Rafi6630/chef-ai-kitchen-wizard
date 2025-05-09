@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft, Plus } from "lucide-react";
+import { Search, Filter, ChefHat, Clock, Star, Globe, Utensils, ArrowRight, ArrowLeft, Plus, Share } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import CategoryCard from "@/components/ui/CategoryCard";
 import { subcategories } from "@/data/mockData";
@@ -40,7 +39,7 @@ export default function Index() {
 
   const handleAddIngredients = (ingredients: string[]) => {
     setSelectedIngredients(ingredients);
-    // Navigate back to home page after adding ingredients
+    // Navigate to home page after adding ingredients
     setStep("subcategory");
   };
 
@@ -105,7 +104,7 @@ export default function Index() {
                 <div 
                   key={cuisine} 
                   className={`cursor-pointer border rounded-lg p-4 text-center hover:bg-chef-primary/10 transition-colors ${
-                    selectedCuisine === cuisine ? 'bg-chef-primary text-white' : 'bg-white dark:bg-gray-800 dark:text-white'
+                    selectedCuisine === cuisine ? 'bg-chef-primary text-white' : 'bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700'
                   }`}
                   onClick={() => handleSelectCuisine(cuisine)}
                 >
@@ -179,18 +178,18 @@ export default function Index() {
   
   return (
     <AppLayout>
-      <header className="px-6 py-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <header className="px-6 py-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border-b border-gray-100 dark:border-gray-800">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-3xl font-bold text-chef-dark dark:text-white">Chef AI</h1>
             <p className="text-gray-500 dark:text-gray-400">What would you like to cook today?</p>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="outline" className="rounded-full w-10 h-10 p-0">
+            <Button variant="outline" className="rounded-full w-10 h-10 p-0 border-gray-200 dark:border-gray-700">
               <Search size={18} />
             </Button>
             <Link to="/filters">
-              <Button variant="outline" className="rounded-full w-10 h-10 p-0">
+              <Button variant="outline" className="rounded-full w-10 h-10 p-0 border-gray-200 dark:border-gray-700">
                 <Filter size={18} />
               </Button>
             </Link>
@@ -238,7 +237,7 @@ export default function Index() {
                       key={ingredient}
                       variant="outline"
                       size="sm"
-                      className="shrink-0 rounded-full"
+                      className="shrink-0 rounded-full border-gray-200 dark:border-gray-700"
                       onClick={() => setSelectedIngredients(prev => [...prev, ingredient])}
                     >
                       {ingredient}
@@ -257,17 +256,16 @@ export default function Index() {
             </div>
             
             {/* Find Recipes Button */}
-            {selectedIngredients.length > 0 && (
-              <div className="mb-6">
-                <Button 
-                  className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-3 rounded-xl shadow-md flex justify-center items-center gap-2"
-                  onClick={findRecipes}
-                >
-                  <Search size={18} />
-                  <span className="font-medium">Find Recipes</span>
-                </Button>
-              </div>
-            )}
+            <div className="mb-6">
+              <Button 
+                className="w-full bg-chef-primary hover:bg-chef-primary/90 text-white py-3 rounded-xl shadow-md flex justify-center items-center gap-2"
+                onClick={findRecipes}
+                disabled={!selectedSubcategory && selectedIngredients.length === 0}
+              >
+                <Search size={18} />
+                <span className="font-medium">Find Recipes</span>
+              </Button>
+            </div>
             
             {/* Quick Filter Section */}
             <div className="mb-6">
@@ -301,8 +299,26 @@ export default function Index() {
               </div>
             </div>
             
-            {/* Find recipes with pantry ingredients */}
-            <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 dark:from-chef-primary/30 dark:to-chef-secondary/30 p-4 rounded-xl">
+            {/* Share Your Culinary Creation */}
+            <div className="mb-6 bg-gradient-to-r from-chef-secondary/10 to-chef-accent/10 dark:from-chef-secondary/30 dark:to-chef-accent/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-chef-secondary text-white p-2 rounded-full">
+                  <Share size={20} />
+                </div>
+                <h2 className="text-lg font-semibold dark:text-white">Share Your Culinary Creation</h2>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                Share your recipes, get feedback, and inspire others with your cooking skills.
+              </p>
+              <Link to="/add-recipe">
+                <Button className="w-full bg-chef-secondary hover:bg-chef-secondary/90 text-white">
+                  Create and Share Recipe
+                </Button>
+              </Link>
+            </div>
+
+            {/* Cook With What You Have */}
+            <div className="mb-6 bg-gradient-to-r from-chef-primary/10 to-chef-secondary/10 dark:from-chef-primary/30 dark:to-chef-secondary/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-3">
                 <div className="bg-chef-primary text-white p-2 rounded-full">
                   <Utensils size={20} />
