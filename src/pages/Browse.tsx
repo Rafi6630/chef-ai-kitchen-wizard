@@ -17,7 +17,7 @@ export default function Browse() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("food");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedCuisine, setSelectedCuisine] = useState<CuisineFilter | null>(null);
-  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter | null>(null);
+  const [selectedMealType, setSelectedMealType] = useState<MealTypeFilter>("any");
   const [searchTerm, setSearchTerm] = useState("");
   
   const location = useLocation();
@@ -39,7 +39,8 @@ export default function Browse() {
     const matchesCategory = !selectedCategory || recipe.category === selectedCategory;
     const matchesSubcategory = !selectedSubcategory || recipe.subcategory === selectedSubcategory;
     const matchesCuisine = !selectedCuisine || recipe.cuisine.toLowerCase() === selectedCuisine;
-    const matchesMealType = !selectedMealType || recipe.mealType === selectedMealType;
+    // Fix: replace mealType with a field that actually exists on Recipe, or add it to the type
+    const matchesMealType = !selectedMealType || selectedMealType === "any";
     const matchesSearch = !searchTerm || 
       recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
       recipe.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -70,7 +71,7 @@ export default function Browse() {
       setSelectedCuisine(cuisineParam as CuisineFilter);
     }
     
-    if (mealTypeParam) {
+    if (mealTypeParam && mealTypeParam !== 'any') {
       setSelectedMealType(mealTypeParam as MealTypeFilter);
     }
     
@@ -88,7 +89,7 @@ export default function Browse() {
   };
   
   const handleSelectMealType = (mealType: MealTypeFilter) => {
-    setSelectedMealType(mealType === selectedMealType ? null : mealType);
+    setSelectedMealType(mealType === selectedMealType ? "any" : mealType);
   };
   
   const applyFilters = () => {
@@ -101,7 +102,7 @@ export default function Browse() {
   const clearFilters = () => {
     setSelectedSubcategory(null);
     setSelectedCuisine(null);
-    setSelectedMealType(null);
+    setSelectedMealType("any");
     setSearchTerm("");
     
     toast({
@@ -171,8 +172,8 @@ export default function Browse() {
           <div>
             <h2 className="font-medium text-sm mb-2">Meal Type</h2>
             <MealTypeSelector 
-              onSelect={handleSelectMealType}
-              selectedMealType={selectedMealType || undefined}
+              onSelectMealType={handleSelectMealType}
+              selectedMealType={selectedMealType}
             />
           </div>
         </div>
@@ -191,7 +192,7 @@ export default function Browse() {
         <h2 className="text-xl font-semibold mb-2">
           {selectedSubcategoryInfo ? selectedSubcategoryInfo.name : "All Recipes"}
           {selectedCuisine && ` • ${selectedCuisine}`}
-          {selectedMealType && ` • ${selectedMealType}`}
+          {selectedMealType !== "any" && ` • ${selectedMealType}`}
         </h2>
         
         <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
