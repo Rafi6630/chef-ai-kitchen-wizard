@@ -16,6 +16,8 @@ export function SubcategoryGrid({ subcategories, selectedSubcategory, onSelectSu
     appetizers: "Delicious starters to begin your meal",
     pickles: "Preserved vegetables with tangy flavors",
     sauces: "Flavorful accompaniments for your dishes",
+    soups: "Comforting bowls for any weather",
+    salads: "Fresh and light vegetable dishes",
     traditional: "Classic dessert recipes from around the world",
     western: "Modern sweets from western cuisines",
     pastries: "Baked goods with flaky textures",
@@ -23,9 +25,7 @@ export function SubcategoryGrid({ subcategories, selectedSubcategory, onSelectSu
     detox: "Healthy juice blends to refresh your body",
     cocktails: "Mixed drinks for social occasions",
     alcoholic: "Beverages with spirits and liquors",
-    hotDrinks: "Warm beverages for cold days",
-    soups: "Comforting bowls for any weather",
-    salads: "Fresh and light vegetable dishes"
+    hotDrinks: "Warm beverages for cold days"
   };
 
   return (

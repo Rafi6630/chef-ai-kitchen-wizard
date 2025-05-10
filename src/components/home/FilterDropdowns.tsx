@@ -35,7 +35,8 @@ export function FilterDropdowns({
 }: FilterDropdownsProps) {
   // Group cuisines by region for better organization
   const cuisineGroups = {
-    "Middle East & North Africa": ["turkish", "syrian", "iraqi", "yemeni", "moroccan", "lebanese"],
+    "Levant & Middle East": ["turkish", "syrian", "iraqi", "yemeni", "lebanese"],
+    "Maghreb & North Africa": ["moroccan"],
     "Europe": ["italian", "german"],
     "Americas": ["american", "mexican"],
     "Asia": ["chinese", "indian", "japanese", "thai"]

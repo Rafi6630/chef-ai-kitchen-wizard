@@ -12,7 +12,7 @@ import { QuickLinks } from "@/components/home/QuickLinks";
 import { useHomeFilters } from "@/hooks/useHomeFilters";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, Utensils, List } from "lucide-react";
+import { Heart, Utensils, Search } from "lucide-react";
 
 export default function Index() {
   const {
@@ -61,7 +61,7 @@ export default function Index() {
         />
       </header>
       
-      <main className="px-6 pb-24"> {/* Added padding to bottom to make room for the new navigation */}
+      <main className="px-6 pb-24"> {/* Added padding to bottom to make room for the navigation */}
         <div className="mb-4">
           <h2 className="text-xl font-semibold mb-2">Select a Subcategory</h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm">
@@ -128,7 +128,7 @@ export default function Index() {
           
           <Link to="/browse">
             <Button variant="ghost" className="flex flex-col items-center gap-1 h-auto py-2">
-              <List size={20} />
+              <Search size={20} />
               <span className="text-xs">Global Recipes</span>
             </Button>
           </Link>

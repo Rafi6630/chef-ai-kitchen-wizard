@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, Lightbulb } from "lucide-react";
 
 interface RecipeFinderProps {
   findRecipes: () => void;
@@ -19,13 +19,13 @@ export function RecipeFinder({ findRecipes, isLoading = false }: RecipeFinderPro
       {isLoading ? (
         <div className="flex items-center gap-2">
           <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-          <span className="font-medium">Finding Recipes...</span>
+          <span className="font-medium">Finding Smart Recipes...</span>
         </div>
       ) : (
         <>
-          <Sparkles size={20} />
+          <Lightbulb size={20} className="animate-pulse text-yellow-200" />
           <span className="font-medium text-lg">Find Recipe Using Artificial Intelligence</span>
-          <Search size={20} />
+          <Sparkles size={20} className="text-yellow-200" />
         </>
       )}
     </Button>
