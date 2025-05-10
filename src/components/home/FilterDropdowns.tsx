@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CuisineFilter, MealTypeFilter, DietaryFilter, DifficultyFilter } from "@/types";
+import { Filter, ChevronDown } from "lucide-react";
 
 interface FilterDropdownsProps {
   filters: {
@@ -32,9 +33,20 @@ export function FilterDropdowns({
   difficultyOptions,
   dietaryOptions
 }: FilterDropdownsProps) {
+  // Group cuisines by region for better organization
+  const cuisineGroups = {
+    "Middle East & North Africa": ["turkish", "syrian", "iraqi", "yemeni", "moroccan", "lebanese"],
+    "Europe": ["italian", "german"],
+    "Americas": ["american", "mexican"],
+    "Asia": ["chinese", "indian", "japanese", "thai"]
+  };
+
   return (
-    <div className="mb-5">
-      <h3 className="font-medium mb-2">Filters</h3>
+    <div className="mb-5 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+      <h3 className="font-semibold mb-3 flex items-center gap-2">
+        <Filter size={18} />
+        Recipe Filters
+      </h3>
       <div className="flex flex-wrap gap-2 mb-3">
         {/* Cuisine Filter */}
         <div className="relative">
@@ -43,21 +55,27 @@ export function FilterDropdowns({
               <Button 
                 variant={filters.cuisine ? "default" : "outline"}
                 size="sm" 
-                className="rounded-full"
+                className="rounded-full flex items-center gap-1"
                 onClick={() => toggleFilter('cuisine')}
               >
-                {filters.cuisine ? `Cuisine: ${filters.cuisine}` : 'Cuisine'}
+                {filters.cuisine ? `Cuisine: ${filters.cuisine}` : 'Cuisine/Country'}
+                <ChevronDown size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 max-h-60 overflow-y-auto">
-              {cuisineOptions.map(cuisine => (
-                <DropdownMenuItem 
-                  key={cuisine}
-                  className="capitalize"
-                  onClick={() => handleFilterSelect('cuisine', cuisine)}
-                >
-                  {cuisine}
-                </DropdownMenuItem>
+            <DropdownMenuContent align="start" className="w-64 max-h-80 overflow-y-auto">
+              {Object.entries(cuisineGroups).map(([groupName, cuisines]) => (
+                <div key={groupName} className="px-2 py-1">
+                  <p className="text-xs text-gray-500 font-medium mb-1">{groupName}</p>
+                  {cuisines.filter(cuisine => cuisineOptions.includes(cuisine as CuisineFilter)).map(cuisine => (
+                    <DropdownMenuItem 
+                      key={cuisine}
+                      className="capitalize"
+                      onClick={() => handleFilterSelect('cuisine', cuisine as CuisineFilter)}
+                    >
+                      {cuisine}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -70,10 +88,11 @@ export function FilterDropdowns({
               <Button 
                 variant={filters.mealType ? "default" : "outline"}
                 size="sm" 
-                className="rounded-full"
+                className="rounded-full flex items-center gap-1"
                 onClick={() => toggleFilter('mealType')}
               >
                 {filters.mealType ? `Meal: ${filters.mealType}` : 'Meal Type'}
+                <ChevronDown size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
@@ -97,10 +116,11 @@ export function FilterDropdowns({
               <Button 
                 variant={filters.difficulty ? "default" : "outline"}
                 size="sm" 
-                className="rounded-full"
+                className="rounded-full flex items-center gap-1"
                 onClick={() => toggleFilter('difficulty')}
               >
                 {filters.difficulty ? `Difficulty: ${filters.difficulty}` : 'Difficulty'}
+                <ChevronDown size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
@@ -124,10 +144,11 @@ export function FilterDropdowns({
               <Button 
                 variant={filters.dietary.length > 0 ? "default" : "outline"}
                 size="sm" 
-                className="rounded-full"
+                className="rounded-full flex items-center gap-1"
                 onClick={() => toggleFilter('dietary')}
               >
-                {filters.dietary.length > 0 ? `Dietary: ${filters.dietary.length}` : 'Dietary'}
+                {filters.dietary.length > 0 ? `Dietary: ${filters.dietary.length}` : 'Dietary Needs'}
+                <ChevronDown size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
