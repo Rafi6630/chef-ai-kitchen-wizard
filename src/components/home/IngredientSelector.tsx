@@ -175,7 +175,7 @@ export function IngredientSelector({
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="input-field w-full h-10 text-sm"
                   >
                     {units.map((u) => (
                       <option key={u} value={u}>
@@ -186,9 +186,9 @@ export function IngredientSelector({
                 </div>
               </div>
               
-              <Button onClick={addIngredient} disabled={!newIngredient}>
+              <Button onClick={addIngredient} disabled={!newIngredient} className="bg-chef-primary hover:bg-chef-primary/90">
                 <Plus size={16} className="mr-1" />
-                Add
+                Add Ingredient
               </Button>
             </div>
             

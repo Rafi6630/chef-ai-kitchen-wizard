@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Common pantry ingredients for quick selection
 const COMMON_INGREDIENTS = [
@@ -21,6 +22,7 @@ export default function QuickIngredientSelector({ onAddIngredients }: QuickIngre
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [customIngredient, setCustomIngredient] = useState("");
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const toggleIngredient = (ingredient: string) => {
     if (selectedIngredients.includes(ingredient)) {
@@ -73,7 +75,7 @@ export default function QuickIngredientSelector({ onAddIngredients }: QuickIngre
             <p className="text-sm text-gray-500 dark:text-gray-400">No ingredients selected yet</p>
           ) : (
             selectedIngredients.map(ingredient => (
-              <div key={ingredient} className="bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center">
+              <div key={ingredient} className="ingredient-tag">
                 <span>{ingredient}</span>
                 <button 
                   onClick={() => removeIngredient(ingredient)}

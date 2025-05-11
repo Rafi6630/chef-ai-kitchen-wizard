@@ -25,4 +25,108 @@
   .px-6 {
     @apply px-4;
   }
+  
+  /* Form element improvements for mobile */
+  .input-field, select, button {
+    @apply text-base;
+  }
+  
+  /* Better touch targets */
+  .ingredient-tag button, .filter-option {
+    @apply min-h-[36px];
+  }
+  
+  /* Ingredient form adaptations */
+  .flex.space-x-2 {
+    @apply space-x-1;
+  }
+  
+  /* Fix for mobile keyboards covering inputs */
+  .fixed-bottom {
+    @apply pb-16;
+  }
+  
+  /* Improved spacing for mobile */
+  .space-y-4 {
+    @apply space-y-3;
+  }
+  
+  /* Tabs on mobile */
+  .tabs-list {
+    @apply w-full overflow-x-auto no-scrollbar;
+  }
+  
+  .tabs-trigger {
+    @apply text-xs;
+  }
+  
+  /* NoScrollbar utility for mobile */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Font size adjustments */
+  .text-lg {
+    @apply text-base;
+  }
+  
+  .text-sm {
+    @apply text-xs;
+  }
+  
+  /* Better grid layouts on mobile */
+  .grid-cols-3 {
+    @apply grid-cols-2;
+  }
+  
+  .grid-cols-4 {
+    @apply grid-cols-2;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 429px) and (max-width: 768px) {
+  .app-container {
+    @apply max-w-full;
+  }
+  
+  /* Adjust padding for tablets */
+  .px-6 {
+    @apply px-5;
+  }
+  
+  /* Improve grid layouts for tablets */
+  .grid-cols-4 {
+    @apply grid-cols-3;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app-container {
+    @apply min-h-screen;
+  }
+  
+  .bottom-nav {
+    @apply h-14 pb-0;
+  }
+  
+  /* Compact UI in landscape */
+  .p-6 {
+    @apply p-3;
+  }
+  
+  .mb-6 {
+    @apply mb-3;
+  }
+  
+  /* Adjust spacing */
+  .space-y-4 {
+    @apply space-y-2;
+  }
 }
