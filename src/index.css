@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap');
 
 @tailwind base;
@@ -185,6 +184,38 @@
   
   .lang-ja {
     font-family: 'Noto Sans JP', sans-serif;
+  }
+  
+  /* Animation for floating particles */
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-20px) translateX(10px);
+      opacity: 0;
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Enhanced mobile form elements */
+  .ingredient-input {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-sm;
+  }
+  
+  .ingredient-tag {
+    @apply bg-chef-primary/10 text-chef-primary px-3 py-1 rounded-full flex items-center gap-1 text-sm;
+  }
+  
+  .tab-active {
+    @apply border-b-2 border-chef-primary text-chef-primary;
   }
 }
 
