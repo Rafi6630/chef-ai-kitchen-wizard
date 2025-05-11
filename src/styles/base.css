@@ -1,0 +1,40 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-chef-background font-opensans text-chef-dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat font-semibold;
+  }
+
+  /* Dark mode text and UI enhancements */
+  .dark body {
+    @apply text-white;
+  }
+  
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    @apply text-white;
+  }
+  
+  .dark .text-gray-500, .dark .text-gray-600, .dark .text-chef-dark {
+    @apply text-gray-300;
+  }
+  
+  .dark .bg-white, .dark .bg-chef-light {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .dark .border-gray-200, .dark .border-gray-100 {
+    @apply border-gray-700;
+  }
+}

@@ -1,0 +1,28 @@
+
+/* Mobile optimizations */
+@media (max-width: 428px) {
+  /* iPhone 12 Pro Max width */
+  .app-container {
+    @apply max-w-full;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-outline {
+    @apply py-2.5 text-sm;
+  }
+  
+  .bottom-nav {
+    @apply h-[4.5rem] pb-4;
+  }
+  
+  h1.text-3xl {
+    @apply text-2xl;
+  }
+  
+  .p-6 {
+    @apply p-4;
+  }
+  
+  .px-6 {
+    @apply px-4;
+  }
+}
