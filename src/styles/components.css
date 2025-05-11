@@ -51,4 +51,9 @@
   .chatbot-bubble.bot {
     @apply bg-gray-100 dark:bg-gray-800 text-chef-dark dark:text-gray-100 mr-auto;
   }
+  
+  /* Added border highlight for demonstration purposes */
+  .category-tabs {
+    @apply border-b-2 border-chef-primary;
+  }
 }
