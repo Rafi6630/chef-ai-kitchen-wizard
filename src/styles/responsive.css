@@ -57,7 +57,7 @@
   }
   
   .tabs-trigger {
-    @apply text-xs;
+    @apply text-xs py-3;
   }
   
   /* NoScrollbar utility for mobile */
@@ -87,6 +87,21 @@
   .grid-cols-4 {
     @apply grid-cols-2;
   }
+  
+  /* Improved ingredient selector */
+  .ingredient-tag {
+    @apply rounded-full text-sm px-3 py-1.5 shadow-sm border border-chef-primary/20;
+  }
+  
+  /* Enhanced category tabs */
+  .category-tabs {
+    @apply shadow-sm border-b-0;
+  }
+  
+  /* Recipe finder button enhancements */
+  Button.RecipeFinder {
+    @apply py-4 text-base;
+  }
 }
 
 /* Tablet optimizations */
@@ -103,6 +118,11 @@
   /* Improve grid layouts for tablets */
   .grid-cols-4 {
     @apply grid-cols-3;
+  }
+  
+  /* Enhanced ingredient selector for tablets */
+  .ingredient-tag {
+    @apply text-sm;
   }
 }
 
@@ -128,5 +148,10 @@
   /* Adjust spacing */
   .space-y-4 {
     @apply space-y-2;
+  }
+  
+  /* Collapse some sections in landscape */
+  .ingredient-selector-container {
+    @apply max-h-64 overflow-y-auto;
   }
 }
