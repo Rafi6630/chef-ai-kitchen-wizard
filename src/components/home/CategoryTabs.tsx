@@ -1,6 +1,7 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Category } from "@/types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CategoryTabsProps {
   selectedCategory: Category;
@@ -8,6 +9,8 @@ interface CategoryTabsProps {
 }
 
 export function CategoryTabs({ selectedCategory, setSelectedCategory }: CategoryTabsProps) {
+  const isMobile = useIsMobile();
+
   return (
     <Tabs 
       defaultValue="food" 
@@ -15,10 +18,10 @@ export function CategoryTabs({ selectedCategory, setSelectedCategory }: Category
       onValueChange={(value) => setSelectedCategory(value as Category)}
       className="w-full"
     >
-      <TabsList className="grid grid-cols-3 mb-6 h-14 border-2 border-chef-primary/20 rounded-xl shadow-md">
+      <TabsList className={`grid grid-cols-3 mb-6 ${isMobile ? 'h-12' : 'h-14'} border-2 border-chef-primary/20 rounded-xl shadow-md tabs-list`}>
         <TabsTrigger 
           value="food" 
-          className="font-medium text-lg data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden"
+          className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden tabs-trigger`}
         >
           Food
           {selectedCategory === "food" && (
@@ -27,7 +30,7 @@ export function CategoryTabs({ selectedCategory, setSelectedCategory }: Category
         </TabsTrigger>
         <TabsTrigger 
           value="desserts" 
-          className="font-medium text-lg data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden"
+          className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden tabs-trigger`}
         >
           Desserts
           {selectedCategory === "desserts" && (
@@ -36,7 +39,7 @@ export function CategoryTabs({ selectedCategory, setSelectedCategory }: Category
         </TabsTrigger>
         <TabsTrigger 
           value="drinks" 
-          className="font-medium text-lg data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden"
+          className={`font-medium ${isMobile ? 'text-base' : 'text-lg'} data-[state=active]:bg-chef-primary data-[state=active]:text-white relative overflow-hidden tabs-trigger`}
         >
           Drinks
           {selectedCategory === "drinks" && (

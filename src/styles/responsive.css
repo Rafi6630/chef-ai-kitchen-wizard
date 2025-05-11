@@ -102,6 +102,35 @@
   Button.RecipeFinder {
     @apply py-4 text-base;
   }
+  
+  /* TabsContent mods for mobile */
+  .tabs-content {
+    @apply p-3;
+  }
+  
+  /* Accordion styles for mobile */
+  .accordion-content {
+    @apply p-2;
+  }
+  
+  .accordion-trigger {
+    @apply text-sm py-2;
+  }
+  
+  /* Sheet component mobile adjustments */
+  .sheet-content {
+    @apply px-4 py-5 pb-8;
+  }
+  
+  /* Input field mobile adjustments */
+  .input {
+    @apply text-base h-11;
+  }
+  
+  /* Mobile floating button */
+  .floating-button {
+    @apply fixed bottom-20 right-4 shadow-xl z-40;
+  }
 }
 
 /* Tablet optimizations */

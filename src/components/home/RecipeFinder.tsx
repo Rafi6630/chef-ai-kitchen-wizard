@@ -51,7 +51,7 @@ export function RecipeFinder({ findRecipes, isLoading = false }: RecipeFinderPro
           ) : (
             <>
               <ChefHat size={isMobile ? 20 : 24} className="text-yellow-200" />
-              <span className="font-medium text-base sm:text-lg">
+              <span className="font-medium text-base sm:text-lg whitespace-nowrap">
                 Find Recipes Using AI
               </span>
               <Sparkles size={isMobile ? 20 : 24} className="text-yellow-200" />
