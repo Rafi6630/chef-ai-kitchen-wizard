@@ -1,69 +1,52 @@
 
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Lightbulb, Sparkles, Search, ChefHat } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { ChefHat } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
-interface RecipeFinderProps {
-  findRecipes: () => void;
+type FindRecipesButtonProps = {
+  onClick: () => void;
   isLoading?: boolean;
-}
+  text?: string;
+};
 
-export function RecipeFinder({ findRecipes, isLoading = false }: RecipeFinderProps) {
-  const isMobile = useIsMobile();
-  
+const FindRecipesButton = ({ onClick, isLoading = false, text = "Find a Recipe Using AI" }: FindRecipesButtonProps) => {
   return (
-    <div className="w-full mt-4">
-      <Button 
-        className="w-full bg-gradient-to-r from-chef-primary to-chef-primary/80 hover:from-chef-primary/90 hover:to-chef-primary 
-                  text-white py-6 rounded-xl shadow-lg flex justify-center items-center gap-3 relative overflow-hidden 
-                  transition-all duration-300 hover:shadow-xl hover:scale-[1.02] border border-white/20 animate-gentle-pulse"
-        onClick={findRecipes}
-        disabled={isLoading}
-        size="lg"
-      >
-        {/* Background animation effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-chef-primary/80 to-chef-primary opacity-75"></div>
-        
-        {/* Floating particles effect */}
-        <div className="absolute inset-0 overflow-hidden">
-          {Array(10).fill(0).map((_, i) => (
-            <div 
-              key={i}
-              className="absolute w-2 h-2 bg-white/30 rounded-full animate-float"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${i * 0.3}s`,
-                animationDuration: `${3 + Math.random() * 3}s`
-              }}
-            ></div>
-          ))}
-        </div>
-        
-        {/* Content */}
-        <div className="relative z-10 flex items-center justify-center gap-3">
-          {isLoading ? (
-            <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-              <span className="font-medium text-base sm:text-lg">Finding Smart Recipes...</span>
-            </div>
-          ) : (
-            <>
-              <ChefHat size={isMobile ? 20 : 24} className="text-yellow-200" />
-              <span className="font-medium text-base sm:text-lg whitespace-nowrap">
-                Find Recipes Using AI
-              </span>
-              <Sparkles size={isMobile ? 20 : 24} className="text-yellow-200" />
-            </>
-          )}
-        </div>
-      </Button>
-      
-      <div className="text-center mt-2 text-xs text-gray-500 flex items-center justify-center">
-        <Lightbulb size={14} className="mr-1 text-chef-primary" />
-        Our AI will prioritize recipes that use most of your available ingredients
-      </div>
-    </div>
+    <Button
+      className="w-full py-6 bg-gradient-to-r from-chef-primary to-chef-medium-gray hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg shadow-md text-white rounded-full"
+      onClick={onClick}
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            className="flex-shrink-0"
+          >
+            <ChefHat size={24} />
+          </motion.div>
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            Finding Recipes with Wasfah AI...
+          </motion.span>
+        </>
+      ) : (
+        <>
+          <motion.div
+            whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+            transition={{ duration: 0.5 }}
+            className="flex-shrink-0 bg-white/20 p-1 rounded-full"
+          >
+            <ChefHat size={24} />
+          </motion.div>
+          <span>{text}</span>
+        </>
+      )}
+    </Button>
   );
-}
+};
+
+export default FindRecipesButton;
