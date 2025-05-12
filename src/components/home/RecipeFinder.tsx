@@ -9,7 +9,7 @@ type FindRecipes = {
   text?: string;
 };
 
-const FindRecipes = ({ onClick, isLoading = false, text = "Find a Recipe Using AI" }: FindRecipesProps) => {
+const RecipeFinder = ({ onClick, isLoading = false, text = "Find a Recipe Using AI" }: RecipeFinderProps) => {
   return (
     <Button
       className="w-full py-6 bg-gradient-to-r from-chef-primary to-chef-medium-gray hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg shadow-md text-white rounded-full"
@@ -30,7 +30,7 @@ const FindRecipes = ({ onClick, isLoading = false, text = "Find a Recipe Using A
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            Finding Recipes with Wasfah AI...
+            Recipe Finder with Wasfah AI...
           </motion.span>
         </>
       ) : (
@@ -49,4 +49,4 @@ const FindRecipes = ({ onClick, isLoading = false, text = "Find a Recipe Using A
   );
 };
 
-export default FindRecipes;
+export default RecipeFinder;
