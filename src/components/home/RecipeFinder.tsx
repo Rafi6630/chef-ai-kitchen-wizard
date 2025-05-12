@@ -3,13 +3,13 @@ import { ChefHat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-type FindRecipesButtonProps = {
+type FindRecipes = {
   onClick: () => void;
   isLoading?: boolean;
   text?: string;
 };
 
-const FindRecipesButton = ({ onClick, isLoading = false, text = "Find a Recipe Using AI" }: FindRecipesButtonProps) => {
+const FindRecipes = ({ onClick, isLoading = false, text = "Find a Recipe Using AI" }: FindRecipesProps) => {
   return (
     <Button
       className="w-full py-6 bg-gradient-to-r from-chef-primary to-chef-medium-gray hover:opacity-95 active:scale-[0.98] transition-all flex items-center justify-center gap-3 text-lg shadow-md text-white rounded-full"
@@ -49,4 +49,4 @@ const FindRecipesButton = ({ onClick, isLoading = false, text = "Find a Recipe U
   );
 };
 
-export default FindRecipesButton;
+export default FindRecipes;
